@@ -26,7 +26,8 @@ function HomeBanner() {
         <div className="text-white mt-5 ">
           <div className="flex flex-col w-full justify-center items-center mb-5">
             <h1 className="text-xl">Welcome To </h1>
-            <h1 style={{ fontSize: "8rem" }}>Queens</h1>
+            <h1 style={{ fontSize: "8rem" }}>Phobe Staycations</h1>
+            <p>we connect you with the best resorts around</p>
           </div>
           <div className="w-full flex justify-center mt-10">
             <h1 className="font-serif uppercase text-md">Scroll For More</h1>

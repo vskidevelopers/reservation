@@ -1,6 +1,7 @@
 import { Fragment, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useAuthenticationFunctions } from "@/utils/firebase";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
@@ -14,13 +15,34 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
+  const isAuthenticated = localStorage.getItem("isAuthenticated") ? true : false
+
+  const { logout, login } = useAuthenticationFunctions()
   // State to track whether the user is logged in or not
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated);
 
   // Function to toggle login state for demo purposes
-  const toggleLogin = () => {
-    setIsLoggedIn(!isLoggedIn);
-  };
+  const handleLogin = () => {
+    try {
+      login()
+      setIsLoggedIn(true)
+    } catch (error) {
+      console.error("auth login error occured ...");
+      console.error("auth err >> ", error);
+
+    }
+  }
+
+  const handleLogout = () => {
+    try {
+      logout()
+      setIsLoggedIn(false)
+    } catch (error) {
+      console.error("auth logout error occured ...");
+      console.error("auth err >> ", error);
+
+    }
+  }
 
   return (
     <Disclosure
@@ -139,7 +161,7 @@ export default function Navbar() {
                             {({ active }) => (
                               <a
                                 href="#"
-                                onClick={toggleLogin} // Log out on click
+                                onClick={handleLogout} // Log out on click
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
                                   "block px-4 py-2 text-sm text-gray-700"
@@ -155,7 +177,7 @@ export default function Navbar() {
                   </>
                 ) : (
                   <button
-                    onClick={toggleLogin} // Log in on click for demo purposes
+                    onClick={handleLogin} // Log in on click for demo purposes
                     className="rounded-md bg-indigo-600 px-4 py-2 text-white text-sm font-medium hover:bg-indigo-700 focus:outline-none"
                   >
                     Log in

@@ -3,10 +3,11 @@ import {
     Package2,
     Settings,
     Home,
-    ShoppingCart,
-    Package,
+    Lamp,
+    ClipboardList,
     Users2,
     LineChart,
+    Wallet
 } from "lucide-react";
 import {
     Tooltip,
@@ -24,7 +25,7 @@ const Sidebar = () => {
                         className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
                     >
                         <Package2 className="h-4 w-4 transition-all group-hover:scale-110" />
-                        <span className="sr-only">Birven Supplies</span>
+                        <span className="sr-only">Phoebe RoomQuest</span>
                     </Link>
                     <Tooltip>
                         <TooltipTrigger asChild>
@@ -38,29 +39,56 @@ const Sidebar = () => {
                         </TooltipTrigger>
                         <TooltipContent side="right">Dashboard</TooltipContent>
                     </Tooltip>
+
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Link
-                                to="/admin/quotations"
-                                className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                                to="/admin/profile"
+                                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                             >
-                                <ShoppingCart className="h-5 w-5" />
-                                <span className="sr-only">Quotation</span>
+                                <Users2 className="h-5 w-5" />
+                                <span className="sr-only">Hotel Profile</span>
                             </Link>
                         </TooltipTrigger>
-                        <TooltipContent side="right">Quotation</TooltipContent>
+                        <TooltipContent side="right">Hotel Profile</TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Link
+                                to="/admin/rooms"
+                                className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                            >
+                                <Lamp className="h-5 w-5" />
+                                <span className="sr-only">Rooms</span>
+                            </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">Rooms</TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Link
+                                to="/admin/bookings"
+                                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                            >
+                                <ClipboardList className="h-5 w-5" />
+                                <span className="sr-only">Bookings</span>
+                            </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">Bookings</TooltipContent>
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Link
-                                to="/admin/products"
+                                to="/admin/finances"
                                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                             >
-                                <Package className="h-5 w-5" />
-                                <span className="sr-only">Products</span>
+                                <Wallet className="h-5 w-5" />
+                                <span className="sr-only">Finances</span>
                             </Link>
                         </TooltipTrigger>
-                        <TooltipContent side="right">Products</TooltipContent>
+                        <TooltipContent side="right">Finances</TooltipContent>
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
@@ -68,23 +96,11 @@ const Sidebar = () => {
                                 to="/admin/reviews"
                                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                             >
-                                <Users2 className="h-5 w-5" />
+                                <LineChart className="h-5 w-5" />
                                 <span className="sr-only">Reviews</span>
                             </Link>
                         </TooltipTrigger>
                         <TooltipContent side="right">Reviews</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Link
-                                to="/admin/teams"
-                                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                            >
-                                <LineChart className="h-5 w-5" />
-                                <span className="sr-only">Team</span>
-                            </Link>
-                        </TooltipTrigger>
-                        <TooltipContent side="right">Teams</TooltipContent>
                     </Tooltip>
                 </nav>
                 <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">

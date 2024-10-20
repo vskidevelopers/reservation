@@ -1,8 +1,9 @@
+import NotFoundPage from "../NotFoundPage"
 
 
 function ManageRooms() {
     return (
-        <div>ManageRooms</div>
+        <div><NotFoundPage title="ManageRooms" /></div>
     )
 }
 

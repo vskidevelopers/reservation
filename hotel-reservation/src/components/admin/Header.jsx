@@ -29,8 +29,8 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
-import { useAuthenticationFunctions } from "@/firebase/firbase";
 import { useNavigate } from "react-router-dom";
+import { useAuthenticationFunctions } from "@/utils/firebase";
 const Header = () => {
     const navigate = useNavigate();
     const { logout } = useAuthenticationFunctions();

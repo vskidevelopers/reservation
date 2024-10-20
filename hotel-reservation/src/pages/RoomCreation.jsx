@@ -1,7 +1,7 @@
 import { useForm, Controller } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
 import { useState } from "react";
-import { useRoomFunctions, useRoomImageUploader } from "../utils/firebase";
+import { useRoomFunctions, useUploadImage } from "../utils/firebase";
 
 export default function RoomCreation() {
   const initialRoomsState = {
@@ -18,11 +18,11 @@ export default function RoomCreation() {
   const { roomType, roomPrice, roomBeds, roomDescription } = formData;
 
   const {
-    uploadRoomImage,
+    uploadImage,
     imageURL,
-    loadingRoomImage,
-    roomImageUploadProgress,
-  } = useRoomImageUploader();
+    imageUploadLoading,
+    imageUploadProgress,
+  } = useUploadImage();
   const { addRoom, loading, error, success, rooms, roomsLoading } =
     useRoomFunctions();
 
@@ -43,7 +43,7 @@ export default function RoomCreation() {
       console.log("No Image Selected");
       return;
     }
-    await uploadRoomImage(file);
+    await uploadImage(file);
     console.log("Image Uploaded!");
     console.log("Image URL >>", imageURL);
   };
@@ -87,7 +87,7 @@ export default function RoomCreation() {
         console.log("Image URLs not available.");
         if (roomImageFile) {
           console.log("uploadimng room image ...");
-          await uploadRoomImage(roomImageFile).then((res) => {
+          await uploadImage(roomImageFile).then((res) => {
             console.log("response >>> ", res);
             setImagesUploaded(true);
             return res.data;
@@ -195,7 +195,7 @@ export default function RoomCreation() {
               <input
                 type="file"
                 {...register("roomImage", { required: true })}
-                // disabled={userDetails != null ? true : false}
+              // disabled={userDetails != null ? true : false}
               />
               {/* <p>
                   {errors?.insurancePolicy
@@ -209,8 +209,8 @@ export default function RoomCreation() {
               type="submit"
               className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
             >
-              {loadingRoomImage
-                ? `${roomImageUploadProgress} % Image uploading...`
+              {imageUploadLoading
+                ? `${imageUploadProgress} % Image uploading...`
                 : "Submit"}
             </button>
           </div>

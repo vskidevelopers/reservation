@@ -32,6 +32,12 @@ import ManageBookings from "./pages/admin/ManageBookings.jsx";
 import FinancialDashboard from "./pages/admin/FinancialDashboard.jsx";
 import ManageReviews from "./pages/admin/ManageReviews.jsx";
 import About from "./pages/About.jsx";
+import HotelProfile from "./pages/admin/HotelProfile.jsx";
+import RoomManagement from "./layouts/admin/RoomManagement.jsx";
+import Settings from "./pages/admin/Settings.jsx";
+import RoomList from "./pages/admin/RoomList.jsx";
+import Login from "./auth/Login.jsx";
+import SignUp from "./auth/HotelSignup.jsx";
 
 
 const router = createBrowserRouter(
@@ -44,6 +50,11 @@ const router = createBrowserRouter(
 
         {/* Explore Hotels Page (with filters) */}
         <Route path="explore" element={<ExploreHotels />} />
+
+
+        {/* Auth Routes */}
+        <Route path="login" element={<Login />} />
+        <Route path="signup" element={<SignUp />} />
 
         {/* Room Details Page */}
         <Route path="rooms/:id" element={<RoomDetails />} />
@@ -76,18 +87,27 @@ const router = createBrowserRouter(
           {/* Admin Dashboard */}
           <Route index element={<AdminDashboard />} />
 
+          {/* Booking Management */}
+          <Route path="profile" element={<HotelProfile />} />
+
           {/* Room Management */}
-          <Route path="rooms/manage" element={<ManageRooms />} />
-          <Route path="rooms/create" element={<RoomCreation />} />
+          <Route path="rooms" element={<RoomManagement />} >
+            <Route index element={<RoomList />} />
+            <Route path="manage" element={<ManageRooms />} />
+            <Route path="create" element={<RoomCreation />} />
+          </Route>
 
           {/* Booking Management */}
-          <Route path="bookings/manage" element={<ManageBookings />} />
+          <Route path="bookings" element={<ManageBookings />} />
 
           {/* Financial Dashboard */}
-          <Route path="earnings" element={<FinancialDashboard />} />
+          <Route path="finances" element={<FinancialDashboard />} />
 
           {/* Review Management */}
-          <Route path="reviews/manage" element={<ManageReviews />} />
+          <Route path="reviews" element={<ManageReviews />} />
+
+          {/* settings */}
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Route>
     </Route>

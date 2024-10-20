@@ -1299,6 +1299,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/number@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@radix-ui/number@npm:1.1.0"
+  checksum: e4fc7483c19141c25dbaf3d140b75e2b7fed0bfa3ad969f4441f0266ed34b35413f57a35df7b025e2a977152bbe6131849d3444fc6f15a73345dfc2bfdc105fa
+  languageName: node
+  linkType: hard
+
 "@radix-ui/primitive@npm:1.1.0":
   version: 1.1.0
   resolution: "@radix-ui/primitive@npm:1.1.0"
@@ -1687,6 +1694,52 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/react-scroll-area@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@radix-ui/react-scroll-area@npm:1.2.0"
+  dependencies:
+    "@radix-ui/number": 1.1.0
+    "@radix-ui/primitive": 1.1.0
+    "@radix-ui/react-compose-refs": 1.1.0
+    "@radix-ui/react-context": 1.1.1
+    "@radix-ui/react-direction": 1.1.0
+    "@radix-ui/react-presence": 1.1.1
+    "@radix-ui/react-primitive": 2.0.0
+    "@radix-ui/react-use-callback-ref": 1.1.0
+    "@radix-ui/react-use-layout-effect": 1.1.0
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 3e3f5cb92948e6d3073150ed3b2bf40b8771bfeb43759f5e666bfb0ebdff43643aad9b82e783e9b17509c9ff8973419f3b9415a0260a27705beeab4e0dd8af00
+  languageName: node
+  linkType: hard
+
+"@radix-ui/react-separator@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@radix-ui/react-separator@npm:1.1.0"
+  dependencies:
+    "@radix-ui/react-primitive": 2.0.0
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: a7c3445603a45075dcf3559eb8f2f2e8545afeae253e67d0bde736c66b293c601974a1d6f9d7be1802d83869933dc120a7389ab98189ceb9a24659737dde0162
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-slot@npm:1.1.0, @radix-ui/react-slot@npm:^1.1.0":
   version: 1.1.0
   resolution: "@radix-ui/react-slot@npm:1.1.0"
@@ -1699,6 +1752,32 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 3c9cd90aabf08f541e20dbecb581744be01c552a0cd16e90d7c218381bcc5307aa8a6013d045864e692ba89d3d8c17bfae08df18ed18be6d223d9330ab0302fa
+  languageName: node
+  linkType: hard
+
+"@radix-ui/react-tabs@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@radix-ui/react-tabs@npm:1.1.1"
+  dependencies:
+    "@radix-ui/primitive": 1.1.0
+    "@radix-ui/react-context": 1.1.1
+    "@radix-ui/react-direction": 1.1.0
+    "@radix-ui/react-id": 1.1.0
+    "@radix-ui/react-presence": 1.1.1
+    "@radix-ui/react-primitive": 2.0.0
+    "@radix-ui/react-roving-focus": 1.1.0
+    "@radix-ui/react-use-controllable-state": 1.1.0
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 9ceac8a655df3c692d86247bdc2f951c4df22b1329451ca7148a545b48ba809e280e565d084d7d502cfe30370e0fcc57f80d47b57ebecd75caca6825bbf47f4a
   languageName: node
   linkType: hard
 
@@ -2429,9 +2508,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001578, caniuse-lite@npm:^1.0.30001580":
-  version: 1.0.30001585
-  resolution: "caniuse-lite@npm:1.0.30001585"
-  checksum: c5994f0b5de857349ae0c157a3c61883e800ed154bbeab339aecf01a0a0fd24f67d23ebb48bc995c4c9cde2a281a51b682d1b14bbf2f832f6b2261119f450af4
+  version: 1.0.30001669
+  resolution: "caniuse-lite@npm:1.0.30001669"
+  checksum: 8ed0c69d0c6aa3b1cbc5ba4e5f5330943e7b7165e257f6955b8b73f043d07ad922265261f2b54d9bbaf02886bbdba5e6f5b16662310a13f91f17035af3212de1
   languageName: node
   linkType: hard
 
@@ -2702,6 +2781,43 @@ __metadata:
   version: 1.4.665
   resolution: "electron-to-chromium@npm:1.4.665"
   checksum: 6c863300909a2712a79bd8a00ff2d3747fb72edf3dfda892449aabd42a12448e8e215e318d628421bbdfc7e4e3bc1fb38a81bbd530a71036bb86a75868e9eb8a
+  languageName: node
+  linkType: hard
+
+"embla-carousel-class-names@npm:^8.3.0":
+  version: 8.3.0
+  resolution: "embla-carousel-class-names@npm:8.3.0"
+  peerDependencies:
+    embla-carousel: 8.3.0
+  checksum: 731ac2fb16c348024b4b2457f4ffc2ce69912e803cb0808868fa228c02ba864400dff83f9d28702e219b39eb4cd095f3c738cf49da3b2929292913232009a617
+  languageName: node
+  linkType: hard
+
+"embla-carousel-react@npm:^8.3.0":
+  version: 8.3.0
+  resolution: "embla-carousel-react@npm:8.3.0"
+  dependencies:
+    embla-carousel: 8.3.0
+    embla-carousel-reactive-utils: 8.3.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.1 || ^18.0.0
+  checksum: 414bf10ea5b983fdf2f64aeb7806ebaf69b2790617c8ff13b13e7bb6cc4671f243544a786fc6be33dde18965513402e4c4d78474ca928f4031af7db9e276be26
+  languageName: node
+  linkType: hard
+
+"embla-carousel-reactive-utils@npm:8.3.0":
+  version: 8.3.0
+  resolution: "embla-carousel-reactive-utils@npm:8.3.0"
+  peerDependencies:
+    embla-carousel: 8.3.0
+  checksum: 687eb69c5db4bf1c9fc09090ea4441e60ab94dd04de7b8e69139eff26fed3d9ba62e6804cc1c44616838c14924fe1b07e31864222a6106365c7129fd95d7d741
+  languageName: node
+  linkType: hard
+
+"embla-carousel@npm:8.3.0":
+  version: 8.3.0
+  resolution: "embla-carousel@npm:8.3.0"
+  checksum: c2d3c89c93e105133e6931dfdba5899f44f01b32ea0fa331999030150819a2a51c4699df49b69540bc935b63def219f7484f6ca363becaacaf7609e863e39b72
   languageName: node
   linkType: hard
 
@@ -3558,7 +3674,10 @@ __metadata:
     "@radix-ui/react-dialog": ^1.1.2
     "@radix-ui/react-dropdown-menu": ^2.1.2
     "@radix-ui/react-icons": ^1.3.0
+    "@radix-ui/react-scroll-area": ^1.2.0
+    "@radix-ui/react-separator": ^1.1.0
     "@radix-ui/react-slot": ^1.1.0
+    "@radix-ui/react-tabs": ^1.1.1
     "@radix-ui/react-tooltip": ^1.1.3
     "@types/react": ^18.2.55
     "@types/react-dom": ^18.2.19
@@ -3566,6 +3685,8 @@ __metadata:
     autoprefixer: ^10.4.17
     class-variance-authority: ^0.7.0
     clsx: ^2.1.1
+    embla-carousel-class-names: ^8.3.0
+    embla-carousel-react: ^8.3.0
     eslint: ^8.56.0
     eslint-plugin-react: ^7.33.2
     eslint-plugin-react-hooks: ^4.6.0

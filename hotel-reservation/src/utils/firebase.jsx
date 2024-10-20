@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import {
   getStorage,
   ref,
@@ -9,6 +10,7 @@ import {
   collection,
   doc,
   setDoc,
+  getDoc,
   getDocs,
   deleteDoc,
   getFirestore,
@@ -26,56 +28,34 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+export const auth = getAuth();
 
-/////////////////////////////////////////
-//  ROOMS RELATED FUNCTIONS //
-////////////////////////////////////////
+////////////////////////  /////
+// GlobalUploadImageFunction //
+////////////////////////  /////
 
-// Todo
-// Fetch rooms from firebase
-// Update room details in firebase
-// Delete  rooms from firebase
+export const useUploadImage = () => {
+  const [imageUploadProgress, setImageUploadProgress] = useState(0);
+  const [imageURL, setImageURL] = useState(null);
+  const [imageUploadLoading, setImageUploadLoading] = useState(false);
 
-export const useRoomImageUploader = () => {
-  const [imageURL, setImageURL] = useState("");
-  const [loadingRoomImage, setLoadingRoomImage] = useState(false);
-  const [roomImageUploadProgress, setRoomImageUploadProgress] = useState(false);
-
-  const storage = getStorage(app);
-  const metadata = {
-    contentType: "image/jpeg",
-  };
-
-  const postRoomImage = async (file) => {
-    const roomsStorageRef = ref(storage, "roomsPage/" + file.name);
-    try {
-      await uploadBytes(roomsStorageRef, file);
-      console.log("Uploaded Image #", file.name);
-      const roomImageUrl = await getDownloadURL(roomsStorageRef);
-      console.log("Download Url >>", roomImageUrl);
-      setImageURL(roomImageUrl);
-    } catch (err) {
-      console.error("An error occured >", err);
-    }
-  };
-
-  const uploadRoomImage = async (file) => {
-    // Initialize the result object
+  const uploadImage = async (file, bucketName) => {
     const result = {
       data: null,
       status: "pending",
     };
 
-    console.log("Uploading room image >>", file);
+    console.log("uploading_image >>", file);
+    console.log("storage_bucket >>", bucketName);
 
     // Upload file and metadata to the object 'images/mountains.jpg'
     const metadata = {
       contentType: "image/jpeg",
     };
-    const storageRef = ref(storage, "roomPage/" + file.name);
+    const storageRef = ref(storage, bucketName + file.name);
 
     try {
-      setLoadingRoomImage(true);
+      setImageUploadLoading(true);
       const uploadTask = uploadBytesResumable(storageRef, file, metadata);
 
       uploadTask.on(
@@ -84,15 +64,15 @@ export const useRoomImageUploader = () => {
           // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
-          setRoomImageUploadProgress(parseInt(parseFloat(progress).toFixed(0)));
+          console.log("upload_is " + progress + "% done");
+          setImageUploadProgress(parseInt(parseFloat(progress).toFixed(0)));
 
           switch (snapshot.state) {
             case "paused":
-              console.log("Upload is paused");
+              console.log("upload_is_paused");
               break;
             case "running":
-              console.log("Upload is running");
+              console.log("upload_is_running");
               break;
           }
         },
@@ -106,13 +86,9 @@ export const useRoomImageUploader = () => {
           getDownloadURL(uploadTask.snapshot.ref)
             .then((downloadURL) => {
               console.log("File available at", downloadURL);
-              console.log(
-                "image uploaded succeffully. click on submit button again"
-              );
               setImageURL(downloadURL);
-              setLoadingRoomImage(false);
+              setImageUploadLoading(false);
               // Update the result object with the download URL and status
-              alert("image uploaded succeffully. click on submit button again");
               result.data = downloadURL;
               result.status = "success";
             })
@@ -125,7 +101,7 @@ export const useRoomImageUploader = () => {
       );
     } catch (err) {
       // Handle any other errors that may occur
-      console.log("the following error occurred >>", err);
+      console.log("the_following_error_occurred >>", err);
       result.status = "error";
       result.error = err;
     }
@@ -133,14 +109,252 @@ export const useRoomImageUploader = () => {
     return result; // Return the result object
   };
 
-  return {
-    imageURL,
-    roomImageUploadProgress,
-    loadingRoomImage,
-    uploadRoomImage,
-  };
+  return { imageUploadProgress, imageURL, imageUploadLoading, uploadImage };
 };
 
+////////////////////////  /////
+// GlobalDateFormattingFunction //
+////////////////////////  /////
+
+const currentDate = new Date();
+const options = {
+  year: "numeric",
+  month: "short",
+  day: "2-digit",
+  hour: "numeric",
+  minute: "numeric",
+  second: "numeric",
+  timeZoneName: "short",
+};
+
+const formattedDate = currentDate.toLocaleString("en-US", options);
+
+
+// ///////////////////////////
+//   Auth Related Functions //
+// //////////////////////////
+
+export const useAuthenticationFunctions = () => {
+
+  const logout = async () => {
+    await signOut(auth);
+    localStorage.clear();
+  };
+
+  const login = async (email, password) => {
+    console.log("logging in ... ");
+    console.log("email >> ", email);
+    console.log("password >> ", password);
+
+    try {
+      // Authenticate the user with the provided email and password
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      // Return a success message or code
+      return {
+        success: true,
+        message: "Login successful",
+        loggedInUser: userCredential.user,
+      };
+    } catch (error) {
+      // Handle authentication errors
+      console.error("Login failed", error);
+
+      // Return an error message or code
+      return {
+        success: false,
+        error: error.code,
+        message: error.message,
+        loggedInUser: null,
+      };
+    }
+  };
+
+  const createNewUser = async (email, password) => {
+    console.log("Signing up...");
+    console.log("email >> ", email);
+    console.log("password >> ", password);
+
+
+    try {
+      // Create a new user with email and password
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+      // User signed up successfully
+      const user = userCredential.user;
+      console.log("User signed up: ", user);
+
+      // You can perform additional actions with the user object here
+      return {
+        success: true,
+        uid: user.uid,  // Unique ID of the user
+        email: user.email,  // The email of the newly created user
+        message: "User created successfully!",
+      };
+
+    } catch (error) {
+      // Handle errors
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log("Error Code: ", errorCode);
+      console.log("Error Message: ", errorMessage);
+
+      // You can add custom error handling logic here if needed
+
+      return {
+        success: false,
+        errorCode: error.code,
+        errorMessage: error.message,
+      };
+    }
+  };
+
+
+  return {
+    login, logout, createNewUser
+  }
+}
+
+
+/////////////////////////////////////////
+//  Hotel RELATED FUNCTIONS //
+////////////////////////////////////////
+
+// TODO:
+// create a verified Hotel Document with UID ==> user.uid
+// Get All Hotel Documents
+// Get Hotel Document by ID
+// 
+
+export const useHotelFunctions = () => {
+
+  const createHotelDocument = async (data, userUid) => {
+    console.log("hotel data for creating new hotel instance >> ", data);
+    const newHotelData = { ...data, verified: false }
+    const hotelCollectionRef = collection(
+      db,
+      "Hotels",
+      userUid
+    );
+
+    try {
+      const newHotelColRef = doc(hotelCollectionRef);
+      await setDoc(newHotelColRef, newHotelData);
+      return { success: true, message: "Hotel added successfully" };
+    } catch (error) {
+      return { success: false, message: "Failed to add the hotel", error: error };
+    }
+  }
+
+  const getAllHotels = async () => {
+    const hotelsCollectionRef = collection(
+      db,
+      "Hotels"
+    );
+
+    const hotelsSnapshot = await getDocs(hotelsCollectionRef);
+    if (hotelsSnapshot?.empty) {
+      console.log("No hotels exists in the db");
+      return {
+        success: false,
+        data: [],
+        message: `No hotels exists in the database`,
+      };
+    } else {
+      console.log(
+        "hotelsSnapShot from fetchHotels >> ",
+        hotelsSnapshot
+      );
+      const hotelData = hotelsSnapshot?.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      return {
+        success: true,
+        data: hotelData,
+        message: `${hotelData?.length}hotels exists in the selected category`,
+      };
+    }
+  }
+
+  const getHotelById = async (id) => {
+    try {
+      const hotelDocRef = doc(db, "Hotels", id); // Reference to the specific hotel document
+      const hotelDocSnap = await getDoc(hotelDocRef);
+
+      if (hotelDocSnap.exists()) {
+        const hotelData = hotelDocSnap.data();
+        console.log("Hotel data:", hotelData);
+        return {
+          success: true,  // Indicating success
+          hotelData: hotelData,  // Returning hotel data as part of the dictionary
+        };
+      } else {
+        console.log("No such hotel!");
+        return {
+          success: false,  // Indicating failure
+          message: "No such hotel!",  // Reason for failure
+        };
+      }
+    } catch (error) {
+      console.error("Error fetching hotel:", error);
+      return {
+        success: false,  // Indicating failure
+        message: "Error fetching hotel",  // General error message
+        error: error.message,  // Detailed error message
+      };
+    }
+  };
+
+  const verifyHotelById = async (id) => {
+    try {
+      const hotelDocRef = doc(db, "Hotels", id); // Reference to the specific hotel document
+
+      // Attempt to update the 'verified' field to true
+      await updateDoc(hotelDocRef, {
+        verified: true,
+      });
+
+      // Log and return a success response
+      console.log(`Hotel with ID ${id} has been successfully verified.`);
+      return {
+        success: true,
+        message: `Hotel with ID ${id} has been verified successfully.`,
+      };
+    } catch (error) {
+      // Log the error with details
+      console.error(`Error verifying hotel with ID ${id}:`, error.message);
+
+      // Return an error response
+      return {
+        success: false,
+        message: `Failed to verify hotel with ID ${id}.`,
+        error: error.message,
+      };
+    }
+  };
+
+
+  return {
+    createHotelDocument, getAllHotels, getHotelById, verifyHotelById
+  }
+}
+
+
+
+
+/////////////////////////////////////////
+//  ROOMS RELATED FUNCTIONS //
+////////////////////////////////////////
+
+// Todo
+// Fetch rooms from firebase
+// Update room details in firebase
+// Delete  rooms from firebase
 export const useRoomFunctions = () => {
   const [loading, setLoading] = useState(false);
   const [roomsLoading, setRoomsLoading] = useState(false);
@@ -213,5 +427,96 @@ export const useRoomFunctions = () => {
     roomsLoading,
   };
 };
+
+export const useBookingFunctions = () => {
+
+  // Fetch all bookings
+  const getBookings = async () => {
+    try {
+      const bookingsRef = collection(db, "Bookings");
+      const querySnapshot = await getDocs(bookingsRef);
+      const bookingsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      return { success: true, data: bookingsData };
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Fetch a single booking by ID
+  const getBookingById = async (id) => {
+    try {
+      const bookingRef = doc(db, "Bookings", id);
+      const bookingDoc = await getDoc(bookingRef);
+      if (bookingDoc.exists()) {
+        return { success: true, data: bookingDoc.data() };
+      } else {
+        return { success: false, error: "No such booking found" };
+      }
+    } catch (error) {
+      console.error("Error fetching booking by ID:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Post a new booking
+  const postBooking = async (data) => {
+    try {
+      const bookingRef = await addDoc(collection(db, "Bookings"), data);
+      return { success: true, id: bookingRef.id, message: "Booking created successfully" };
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Approve a booking
+  const approveBooking = async (id) => {
+    try {
+      const bookingRef = doc(db, "Bookings", id);
+      await updateDoc(bookingRef, { status: "approved" });
+      return { success: true, message: "Booking approved" };
+    } catch (error) {
+      console.error("Error approving booking:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Reject a booking
+  const rejectBooking = async (id) => {
+    try {
+      const bookingRef = doc(db, "Bookings", id);
+      await updateDoc(bookingRef, { status: "rejected" });
+      return { success: true, message: "Booking rejected" };
+    } catch (error) {
+      console.error("Error rejecting booking:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Delete a booking
+  const deleteBooking = async (id) => {
+    try {
+      await deleteDoc(doc(db, "Bookings", id));
+      return { success: true, message: "Booking deleted successfully" };
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  return {
+    getBookings,
+    getBookingById,
+    postBooking,
+    approveBooking,
+    rejectBooking,
+    deleteBooking,
+  };
+};
+
 
 
