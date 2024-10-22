@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import RoomBookingForm from "../components/RoomBookingForm";
 import { useRoomFunctions } from "../utils/firebase";
 import { cardsData } from "../utils/RoomsData";
+import NotFoundPage from "./NotFoundPage";
 
 function RoomDetails() {
   const { rooms } = useRoomFunctions();
@@ -17,12 +18,22 @@ function RoomDetails() {
       const roomData = cardsData.filter((room) => room.id === id);
 
       console.log("room Id >> ", id);
+      console.log("room Id Type >> ", typeof (id));
       console.log("room data >> ", roomData);
       setRoom(roomData[0]);
     };
 
     getRoom();
   }, [id]);
+
+  if (id === "undefined" || undefined) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <NotFoundPage />
+      </div>
+    );
+  }
+
 
   return (
     <div>

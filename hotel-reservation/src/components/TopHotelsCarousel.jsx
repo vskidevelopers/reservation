@@ -16,6 +16,9 @@ const numberWithinRange = (number, min, max) =>
 
 const TopHotelsCarousel = (props) => {
     const { slides, options } = props
+    console.log("slides >> ", slides);
+    console.log("top carousel props  >> ", props);
+
     const [emblaRef, emblaApi] = useEmblaCarousel(options)
     const tweenFactor = useRef(0)
     const tweenNodes = useRef([])
@@ -29,6 +32,8 @@ const TopHotelsCarousel = (props) => {
 
     const setTweenNodes = useCallback((emblaApi) => {
         tweenNodes.current = emblaApi.slideNodes().map((slideNode) => {
+            console.log("each slideNode in setTweenNodes >> ", slideNode)
+            console.log("slideNode.querySelector('.embla__slide__number') >> ", slideNode.querySelector('.embla__slide__number'))
             return slideNode.querySelector('.embla__slide__number')
         })
     }, [])
@@ -93,13 +98,17 @@ const TopHotelsCarousel = (props) => {
             .on('slideFocus', tweenScale)
     }, [emblaApi, tweenScale])
 
+
+
     return (
         <div className="embla">
             <div className="embla__viewport" ref={emblaRef}>
                 <div className="embla__container">
-                    {slides.map((index, slide) => (
+                    {slides.map((slide, index) => (
                         <div className="embla__slide" key={index}>
-                            <HotelSliderCard slide={slide} />
+                            <div className='embla__slide__number pt-5'>
+                                <HotelSliderCard slide={slide} index={index} />
+                            </div>
                         </div>
                     ))}
                 </div>

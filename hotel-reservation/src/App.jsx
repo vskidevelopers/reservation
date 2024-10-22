@@ -2,6 +2,8 @@
 import HomeBanner from "./components/HomeBanner";
 import ReservationForm from "./components/ReservationForm";
 import Rooms from "./pages/Rooms";
+import RoomSection from "./sections/RoomSection";
+import RoomTypes from "./sections/RoomTypes";
 import TopHotelsSection from "./sections/TopHotelsSection";
 
 function App() {
@@ -17,8 +19,10 @@ function App() {
         <div className=" py-32">
           <TopHotelsSection />
         </div>
-
-        <Rooms />
+        <RoomSection />
+        <div className="w-full">
+          <RoomTypes />
+        </div>
       </div>
     </>
   );

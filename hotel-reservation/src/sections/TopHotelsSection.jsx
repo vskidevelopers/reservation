@@ -4,13 +4,13 @@ import "./topHotels.css"
 
 function TopHotelsSection() {
     const OPTIONS = { loop: true }
-    const SLIDE_COUNT = 5
+
     const SLIDES = [
-        { title: 'Hotel Paradise', imageUrl: '/images/hotel1.jpg', description: 'A luxury experience.' },
-        { title: 'Ocean View Retreat', imageUrl: '/images/hotel2.jpg', description: 'Stunning sea views.' },
-        { title: 'Mountain Escape', imageUrl: '/images/hotel3.jpg', description: 'Relax in nature.' },
-        { title: 'Urban Oasis', imageUrl: '/images/hotel4.jpg', description: 'In the heart of the city.' },
-        { title: 'Desert Mirage', imageUrl: '/images/hotel5.jpg', description: 'A secluded retreat.' }
+        { title: 'Hotel Paradise', imageUrl: 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg', description: 'A luxury experience.' },
+        { title: 'Ocean View Retreat', imageUrl: 'https://images.pexels.com/photos/210265/pexels-photo-210265.jpeg', description: 'Stunning sea views.' },
+        { title: 'Mountain Escape', imageUrl: 'https://images.pexels.com/photos/18667629/pexels-photo-18667629/free-photo-of-sofas-in-a-living-room.jpeg', description: 'Relax in nature.' },
+        { title: 'Urban Oasis', imageUrl: 'https://images.pexels.com/photos/7545497/pexels-photo-7545497.jpeg', description: 'In the heart of the city.' },
+        { title: 'Desert Mirage', imageUrl: 'https://images.pexels.com/photos/775219/pexels-photo-775219.jpeg', description: 'A secluded retreat.' }
     ];
 
     return (
