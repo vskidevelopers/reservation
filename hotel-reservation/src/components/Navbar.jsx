@@ -217,18 +217,15 @@ export default function Navbar() {
                       </Menu>
                     </>
                   ) : (
-                    // <button
-                    //   onClick={handleClientLogin} // Log in on click for demo purposes
-                    //   className="rounded-md bg-indigo-600 px-4 py-2 text-white text-sm font-medium hover:bg-indigo-700 focus:outline-none"
-                    // >
-                    //   Log in
-                    // </button>
+
 
                     <>
-                      <DialogTrigger><Button> Log in</Button></DialogTrigger>
+                      <DialogTrigger>
+                        <Button>Log in</Button>
+                      </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle className="text-center">Only google users can create accounts</DialogTitle>
+                          <DialogTitle className="text-center">Only Google users can create accounts</DialogTitle>
                           <DialogDescription>
                             <Button
                               className="w-full bg-red-500 hover:bg-red-600"
@@ -237,11 +234,21 @@ export default function Navbar() {
                             >
                               {loading ? "Logging in..." : "Use your Google Account"}
                             </Button>
+                            <p className="text-center mt-4">
+                              If you are a hotel looking to manage bookings, please{" "}
+                              <a
+                                href="/login"
+                                className="text-blue-500 hover:underline"
+                              >
+                                click here
+                              </a>{" "}
+                              to sign in with your hotel account.
+                            </p>
                           </DialogDescription>
                         </DialogHeader>
                       </DialogContent>
-
                     </>
+
                   )}
                 </div>
               </div>
