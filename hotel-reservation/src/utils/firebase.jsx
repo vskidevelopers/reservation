@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithPopup, signInWithEmailAndPassword, signOut, GoogleAuthProvider } from "firebase/auth";
 import {
   getStorage,
   ref,
@@ -17,6 +17,8 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
+
+
 const firebaseConfig = {
   apiKey: "AIzaSyBTATbdNoCUL-XEjztavWBrV9ZkmpkuDyY",
   authDomain: "hotel-project-ecd01.firebaseapp.com",
@@ -28,7 +30,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-export const auth = getAuth();
+export const auth = getAuth(app);
 
 ////////////////////////  /////
 // GlobalUploadImageFunction //
@@ -214,8 +216,56 @@ export const useAuthenticationFunctions = () => {
   };
 
 
+  const createClientUser = async () => {
+    const provider = new GoogleAuthProvider(); // Initialize GoogleAuthProvider
+
+    try {
+      // Sign in with Google popup
+      const result = await signInWithPopup(auth, provider);
+
+      // Extracting Google Access Token
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+
+      // Extracting signed-in user info
+      const user = result.user;
+
+      // You can access user info such as displayName, email, photoURL, etc.
+      console.log("User signed in successfully: ", user);
+
+      // Optional: handle additional user info if required
+      // const additionalInfo = getAdditionalUserInfo(result);
+
+      return {
+        success: true,
+        user,
+        token,
+      };
+    } catch (error) {
+      // Handle sign-in errors
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      const email = error.customData?.email; // Email used in the attempt
+      const credential = GoogleAuthProvider.credentialFromError(error); // The AuthCredential used
+
+      console.error("Error during Google sign-in:", errorMessage);
+
+      return {
+        success: false,
+        errorCode,
+        errorMessage,
+        email,
+        credential,
+      };
+    }
+
+
+
+  }
+
+
   return {
-    login, logout, createNewUser
+    login, logout, createNewUser, createClientUser
   }
 }
 

@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Navigate, Outlet, useNavigate, useLocation } from "react-router-dom";
-// import { auth } from "@/firebase/firbase";
+
 import { useState } from "react";
 import { useEffect } from "react";
+import { auth } from "@/utils/firebase";
 
 export default function PrivateRoutes() {
     const [authUser, setAuthUser] = useState();
-    const [loginState, setLoginState] = useState(false);
 
-    //   const user = auth.currentUser;
-    const user = true;
+    const user = auth.currentUser;
+    // const user = true;
     const navigate = useNavigate();
     const location = useLocation();
 

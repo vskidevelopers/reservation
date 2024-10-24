@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 function RoomTypeCard({ id, title, imageUrl, price, roomType, small }) {
     return (
         <div className={`${small ? "px-1 md:px-20" : "px-0"}`}>
-            <Link to={`/rooms/${roomType}`} className="block overflow-clip max-w-xl">
+            <Link to={`/rooms/types/${roomType}`} className="block overflow-clip max-w-xl">
                 <img
                     alt={title}
                     src={imageUrl}

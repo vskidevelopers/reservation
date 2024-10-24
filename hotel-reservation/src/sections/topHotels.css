@@ -115,5 +115,4 @@
 }
 .embla__slide__number:not(.is-snapped) {
   opacity: 0.9;
-  border: 1px solid black;
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import RoomCard from "../components/RoomCard";
 import { useRoomFunctions } from "../utils/firebase";
-import { cardsData } from "../utils/RoomsData";
+
 
 function Rooms() {
   const { rooms, getRooms } = useRoomFunctions();

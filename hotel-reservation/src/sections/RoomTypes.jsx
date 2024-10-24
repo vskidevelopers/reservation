@@ -2,7 +2,7 @@ import React from "react";
 
 import RoomTypeCard from "@/components/RoomTypeCard";
 
-const roomTypes = [
+export const roomTypes = [
     {
         id: 1,
         title: "Single Room",

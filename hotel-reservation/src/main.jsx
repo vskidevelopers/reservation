@@ -38,6 +38,7 @@ import Settings from "./pages/admin/Settings.jsx";
 import RoomList from "./pages/admin/RoomList.jsx";
 import Login from "./auth/Login.jsx";
 import SignUp from "./auth/HotelSignup.jsx";
+import RoomTypeDetails from "./pages/RoomTypeDetails.jsx";
 
 
 const router = createBrowserRouter(
@@ -58,6 +59,7 @@ const router = createBrowserRouter(
 
         {/* Room Details Page */}
         <Route path="rooms/:id" element={<RoomDetails />} />
+        <Route path="rooms/types/:type" element={<RoomTypeDetails />} />
 
         {/* Hotel Detail Page */}
         <Route path="hotels/:hotelId" element={<HotelDetails />} />
