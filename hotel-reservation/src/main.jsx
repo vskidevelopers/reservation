@@ -40,6 +40,8 @@ import Login from "./auth/Login.jsx";
 import SignUp from "./auth/HotelSignup.jsx";
 import RoomTypeDetails from "./pages/RoomTypeDetails.jsx";
 import HotelSignUp from "./auth/HotelSignup.jsx";
+import HotelSignUpConfirm from "./pages/HotelSignUpConfirm.jsx";
+import HotelsList from "./pages/admin/HotelsList.jsx";
 
 
 const router = createBrowserRouter(
@@ -58,6 +60,7 @@ const router = createBrowserRouter(
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<SignUp />} />
         <Route path="hotel-signup" element={<HotelSignUp />} />
+        <Route path="new-hotel-confirm" element={<HotelSignUpConfirm />} />
 
         {/* Room Details Page */}
         <Route path="rooms/:id" element={<RoomDetails />} />
@@ -93,6 +96,7 @@ const router = createBrowserRouter(
 
           {/* Booking Management */}
           <Route path="profile" element={<HotelProfile />} />
+          <Route path="hotels" element={<HotelsList />} />
 
           {/* Room Management */}
           <Route path="rooms" element={<RoomManagement />} >

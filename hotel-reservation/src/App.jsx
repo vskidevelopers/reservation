@@ -11,7 +11,7 @@ function App() {
     <>
       <div className="">
         <HomeBanner />
-        <div className="w-full py-4 flex justify-center items-center absolute -mt-28 ">
+        <div className="w-full py-4 flex justify-center items-center absolute -mt-[19rem] md:-mt-28 ">
 
           <ReservationForm />
         </div>

@@ -11,7 +11,7 @@ const HotelSliderCard = (props) => {
     return (
         <div className="relative max-w-sm mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
             {/* Background Image */}
-            <div className="relative h-96">
+            <div className="relative h-60 md:h-72 lg:h-96">
                 <img
                     className="object-cover w-full h-full"
                     src={slide?.imageUrl}

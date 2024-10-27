@@ -9,6 +9,7 @@ export default function PrivateRoutes() {
     const [authUser, setAuthUser] = useState();
 
     const user = auth.currentUser;
+
     // const user = true;
     const navigate = useNavigate();
     const location = useLocation();

@@ -14,6 +14,8 @@ import {
   getDocs,
   deleteDoc,
   getFirestore,
+  updateDoc,
+  query, where
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -284,11 +286,10 @@ export const useHotelFunctions = () => {
 
   const createHotelDocument = async (data, userUid) => {
     console.log("hotel data for creating new hotel instance >> ", data);
-    const newHotelData = { ...data, verified: false }
+    const newHotelData = { ...data, verified: false, userId: null }
     const hotelCollectionRef = collection(
       db,
       "Hotels",
-      userUid
     );
 
     try {
@@ -331,6 +332,40 @@ export const useHotelFunctions = () => {
     }
   }
 
+  const getAllApprovedHotels = async () => {
+    const hotelsCollectionRef = collection(
+      db,
+      "Hotels"
+    );
+
+    const approvedHotelsQuery = query(hotelsCollectionRef, where("verified", "==", true));
+
+    const approvedHotelsSnapshot = await getDocs(approvedHotelsQuery);
+
+    if (approvedHotelsSnapshot?.empty) {
+      console.log("No hotels exists in the db");
+      return {
+        success: false,
+        data: [],
+        message: `No hotels exists in the database`,
+      };
+    } else {
+      console.log(
+        "approvedHotelsSnapshot from fetchHotels >> ",
+        approvedHotelsSnapshot
+      );
+      const hotelData = approvedHotelsSnapshot?.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      return {
+        success: true,
+        data: hotelData,
+        message: `${hotelData?.length}hotels exists in the selected category`,
+      };
+    }
+  }
+
   const getHotelById = async (id) => {
     try {
       const hotelDocRef = doc(db, "Hotels", id); // Reference to the specific hotel document
@@ -361,36 +396,87 @@ export const useHotelFunctions = () => {
   };
 
   const verifyHotelById = async (id) => {
-    try {
-      const hotelDocRef = doc(db, "Hotels", id); // Reference to the specific hotel document
+    const { createNewUser } = useAuthenticationFunctions()
+    const selectedHotelResponse = await getHotelById(id)
+    const hotelDocRef = doc(db, "Hotels", id); // Reference to the specific hotel document
 
-      // Attempt to update the 'verified' field to true
-      await updateDoc(hotelDocRef, {
-        verified: true,
-      });
+    if (selectedHotelResponse?.success) {
+      const email = selectedHotelResponse?.hotelData?.email
+      const password = selectedHotelResponse?.hotelData?.password
 
-      // Log and return a success response
-      console.log(`Hotel with ID ${id} has been successfully verified.`);
-      return {
-        success: true,
-        message: `Hotel with ID ${id} has been verified successfully.`,
-      };
-    } catch (error) {
-      // Log the error with details
-      console.error(`Error verifying hotel with ID ${id}:`, error.message);
+      try {
+        const createNewUserResponse = await createNewUser(email, password)
+        console.log("createNew UserResponse >> ", createNewUserResponse);
 
-      // Return an error response
-      return {
-        success: false,
-        message: `Failed to verify hotel with ID ${id}.`,
-        error: error.message,
-      };
+        if (createNewUserResponse?.success) {
+
+          await updateDoc(hotelDocRef, {
+            userId: createNewUserResponse?.uid,
+            verified: true,
+          });
+
+          console.log(`Hotel with ID ${id} has been successfully verified.`);
+          return {
+            success: true,
+            message: `Hotel with ID ${id} has been verified successfully.`,
+          };
+        } else {
+          console.log("Error verifying hotel:", createNewUserResponse.error);
+          return {
+            success: false,
+            message: "Error verifying hotel",
+            error: createNewUserResponse.error
+          }
+        }
+
+      } catch (error) {
+        console.error(`Error verifying hotel with ID ${id}:`, error.message);
+
+        // Return an error response
+        return {
+          success: false,
+          message: `Failed to verify hotel with ID ${id}.`,
+          error: error.message,
+        };
+      } a
     }
+
+  };
+
+  const rejectHotelById = async (id) => {
+    const selectedHotelResponse = await getHotelById(id)
+    const hotelDocRef = doc(db, "Hotels", id); // Reference to the specific hotel document
+
+    if (selectedHotelResponse?.success) {
+
+
+      try {
+        await updateDoc(hotelDocRef, {
+          verified: false,
+        });
+
+        console.log(`Hotel with ID ${id} has been successfully un-verified.`);
+        return {
+          success: true,
+          message: `Hotel with ID ${id} has been un-verified successfully.`,
+        };
+      } catch (error) {
+        console.error(`Error un-verifying hotel with ID ${id}:`, error.message);
+
+        // Return an error response
+        return {
+          success: false,
+          message: `Failed to un-verify hotel with ID ${id}.`,
+          error: error.message,
+        };
+      }
+    }
+
   };
 
 
   return {
-    createHotelDocument, getAllHotels, getHotelById, verifyHotelById
+    createHotelDocument, getAllHotels, getHotelById, verifyHotelById, rejectHotelById, getAllApprovedHotels
   }
 }
 
