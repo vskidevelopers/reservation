@@ -25,7 +25,7 @@ function Rooms() {
     <div>
       <div className="h-52 md:h-60 flex  flex-col justify-center items-center before:absolute before:content-[''] before:bg-emerald-50 before:rounded-full before:h-96 before:w-96 before:lg:h-[1200px]  before:lg:w-[1200px] before:-z-10 before:left-1/2 before:top-0 before:transform before:translate-x-[-50%]   ">
         <h5 className="font-sans text-xl text-gray-600 ">Rooms</h5>
-        <h1 className=" font-serif text-5xl ">Types of Room</h1>
+        <h1 className=" font-serif text-5xl ">Our Type of Rooms</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2">

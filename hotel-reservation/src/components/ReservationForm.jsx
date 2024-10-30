@@ -1,11 +1,15 @@
 import { useForm } from "react-hook-form";
 
-const ReservationForm = ({ onSubmit }) => {
+const ReservationForm = () => {
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm();
+
+    const onSubmit = async (data) => {
+        console.log("reservation data >> ", data);
+    }
 
 
 

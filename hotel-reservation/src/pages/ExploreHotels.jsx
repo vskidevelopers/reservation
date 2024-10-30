@@ -41,8 +41,9 @@ function ExploreHotels() {
                     image="https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg"
                 />{" "}
             </div>
-            <HotelListings hotels={hotels} />
-
+            <div className='px-10 md:px-20'>
+                <HotelListings hotels={hotels} />
+            </div>
 
 
         </div>

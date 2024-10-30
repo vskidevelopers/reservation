@@ -1,4 +1,8 @@
 const RoomSection = () => {
+
+    const handleBookFeatured = () => {
+        alert("booking of featured rooms is still under maintanence")
+    }
     return (
         <div className="p-8 lg:p-16">
             {/* Featured Room Title */}
@@ -58,7 +62,7 @@ const RoomSection = () => {
                         </span>
 
                         {/* Next Button */}
-                        <button className="text-white bg-gray-700 hover:bg-gray-900 px-6 py-3 rounded-lg text-lg font-medium">
+                        <button onClick={handleBookFeatured} className="text-white bg-gray-700 hover:bg-gray-900 px-6 py-3 rounded-lg text-lg font-medium">
                             Next
                         </button>
                     </div>

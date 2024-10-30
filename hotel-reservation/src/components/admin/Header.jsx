@@ -2,12 +2,13 @@ import { Link } from "react-router-dom";
 import {
     Home,
     LineChart,
-    Package,
+    ClipboardList,
     Package2,
     PanelLeft,
-    Search,
-    ShoppingCart,
+    Search, Wallet,
+    Lamp,
     Users2,
+    Settings
 } from "lucide-react";
 import {
     DropdownMenu,
@@ -20,6 +21,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -31,9 +33,15 @@ import {
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import { useAuthenticationFunctions } from "@/utils/firebase";
+import { useEffect, useState } from "react";
 const Header = () => {
     const navigate = useNavigate();
     const { logout } = useAuthenticationFunctions();
+    const [hotelId, setHotelId] = useState();
+    useEffect(() => {
+        const loaclHotelId = localStorage.getItem("hotelId")
+        setHotelId(loaclHotelId)
+    }, [hotelId])
 
     const handleLogout = async () => {
         try {
@@ -61,8 +69,9 @@ const Header = () => {
                             className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
                         >
                             <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
-                            <span className="sr-only">Birven Supplies</span>
+                            <span className="sr-only">Phoebe RoomQuest</span>
                         </Link>
+
                         <Link
                             href="#"
                             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
@@ -70,36 +79,59 @@ const Header = () => {
                             <Home className="h-5 w-5" />
                             Dashboard
                         </Link>
+
                         <Link
-                            to="/admin/quotations"
+                            to={`/admin/profile/${hotelId}`}
                             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                         >
-                            <ShoppingCart className="h-5 w-5" />
-                            Quotation
+                            <Users2 className="h-5 w-5" />
+                            Hotel Profile
                         </Link>
+
                         <Link
-                            to="/admin/products"
-                            className="flex items-center gap-4 px-2.5 text-foreground"
+                            to="/admin/rooms"
+                            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                         >
-                            <Package className="h-5 w-5" />
-                            Products
+                            <Lamp className="h-5 w-5" />
+                            Rooms
                         </Link>
+
+                        <Link
+                            to="/admin/bookings"
+                            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                        >
+                            <ClipboardList className="h-5 w-5" />
+                            Bookings
+                        </Link>
+
+                        <Link
+                            to="/admin/finances"
+                            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                        >
+                            <Wallet className="h-5 w-5" />
+                            Finances
+                        </Link>
+
                         <Link
                             to="/admin/reviews"
                             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                         >
-                            <Users2 className="h-5 w-5" />
+                            <LineChart className="h-5 w-5" />
                             Reviews
                         </Link>
-                        <Link
-                            to="/admin/teams"
-                            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-                        >
-                            <LineChart className="h-5 w-5" />
-                            Teams
-                        </Link>
+
+                        <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
+                            <Link
+                                to="/admin/hotels"
+                                className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                            >
+                                <Settings className="h-5 w-5" />
+                                Settings
+                            </Link>
+                        </nav>
                     </nav>
                 </SheetContent>
+
             </Sheet>
             <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>

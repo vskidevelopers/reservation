@@ -33,8 +33,32 @@ import {
 } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
+import { auth, useHotelFunctions } from "@/utils/firebase"
+import { useEffect, useState } from "react"
+import capitalize from "@/utils/Capitalize"
+import { Link } from "react-router-dom"
+
+
 
 function AdminDashboard() {
+    const [hotel, setHotel] = useState()
+    const { getHotelByUserId } = useHotelFunctions()
+    const user = auth?.currentUser
+    console.log("user from admin dashboard > ", user);
+
+
+    const getUserHotel = async () => {
+        const hotelResponse = await getHotelByUserId(user?.uid)
+        console.log("hotelResponse from adminDash > ", hotelResponse?.hotelsData[0]);
+        setHotel(hotelResponse?.hotelsData[0])
+        localStorage.setItem("hotelId", hotelResponse?.hotelsData[0]?.id)
+    }
+
+    useEffect(() => {
+        getUserHotel()
+    }, [])
+
+
     return (
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
             <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
@@ -43,16 +67,22 @@ function AdminDashboard() {
                         className="sm:col-span-2" x-chunk="dashboard-05-chunk-0"
                     >
                         <CardHeader className="pb-3">
-                            <CardTitle>Your Orders</CardTitle>
+                            <CardTitle className="text-2xl ">
+                                Welcome, to <span className="text-primary font-bold">{capitalize(hotel?.hotelName)}</span>
+                            </CardTitle>
+
                             <CardDescription className="max-w-lg text-balance leading-relaxed">
-                                Introducing Our Dynamic Orders Dashboard for Seamless
-                                Management and Insightful Analysis.
+                                Manage your hotel’s operations seamlessly. Oversee room availability, guest services, and hotel insights to ensure a smooth and exceptional experience for your guests.
                             </CardDescription>
                         </CardHeader>
                         <CardFooter>
-                            <Button>Create New Booking</Button>
+                            <Link to={`/admin/profile/${hotel?.id}`}>
+                                <Button>Manage Hotel</Button>
+                            </Link>
+
                         </CardFooter>
                     </Card>
+
                     <Card x-chunk="dashboard-05-chunk-1">
                         <CardHeader className="pb-2">
                             <CardDescription>This Week</CardDescription>

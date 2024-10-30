@@ -15,7 +15,14 @@ import {
     TooltipTrigger,
     TooltipProvider,
 } from "@/components/ui/tooltip";
+import { useEffect, useState } from "react";
 const Sidebar = () => {
+    const [hotelId, setHotelId] = useState();
+    useEffect(() => {
+        const loaclHotelId = localStorage.getItem("hotelId")
+        setHotelId(loaclHotelId)
+    }, [hotelId])
+
     return (
         <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
             <TooltipProvider>
@@ -43,7 +50,7 @@ const Sidebar = () => {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Link
-                                to="/admin/profile"
+                                to={`/admin/profile/${hotelId}`}
                                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                             >
                                 <Users2 className="h-5 w-5" />

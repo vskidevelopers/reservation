@@ -95,7 +95,7 @@ const router = createBrowserRouter(
           <Route index element={<AdminDashboard />} />
 
           {/* Booking Management */}
-          <Route path="profile" element={<HotelProfile />} />
+          <Route path="profile/:hotelId" element={<HotelProfile />} />
           <Route path="hotels" element={<HotelsList />} />
 
           {/* Room Management */}

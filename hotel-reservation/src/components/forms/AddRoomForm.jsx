@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardFooter } from "../ui/card";
 import { ScrollArea } from "../ui/scroll-area";
-import { useForm } from "react-hook-form"
+import { useForm } from "react-hook-form";
 
-
-function AddRoomForm({ roomType }) {
-
-    const [loading, setLoading] = useState(false)
+function AddRoomForm() {
+    const [loading, setLoading] = useState(false);
 
     const {
         register,
@@ -19,8 +17,6 @@ function AddRoomForm({ roomType }) {
         const file = event.target.files[0];
         console.log("image file >> ", file);
 
-
-
         // Handle the image upload logic and get the download URL
         // For example:
         // uploadImage(file).then(url => setImageURL(url));
@@ -28,17 +24,17 @@ function AddRoomForm({ roomType }) {
 
     const onSubmit = async (data) => {
         setLoading(true);
+
         // Process the form data, including imageURL and amenities as an array
-        const amenitiesArray = data?.amenities.split(',').map(amenity => amenity.trim());
+        const amenitiesArray = data?.amenities.split(',').map((amenity) => amenity.trim());
         // Send the data to your backend API or handle it as needed
-        const roomData = { ...data, amenities: amenitiesArray }
+        const roomData = { ...data, amenities: amenitiesArray };
         console.log("room data for submission >> ", roomData);
 
         // await saveRoomData({ ...data, image: imageURL, amenities: amenitiesArray });
         setLoading(false);
-        reset()
+        reset();
     };
-
 
     return (
         <div className="flex w-full justify-center items-center">
@@ -46,9 +42,7 @@ function AddRoomForm({ roomType }) {
                 <Card className="w-full max-w-sm">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <CardHeader>
-                            <CardDescription>
-                                Fill out the details below to add a new room.
-                            </CardDescription>
+                            <CardDescription>Fill out the details below to add a new room.</CardDescription>
                         </CardHeader>
                         <CardContent className="grid gap-4">
                             {/* Room Image */}
@@ -60,16 +54,21 @@ function AddRoomForm({ roomType }) {
                                 )}
                             </div>
 
-                            {/* Room Name */}
+                            {/* Room Type */}
                             <div className="grid gap-2">
-                                <label htmlFor="roomName">Room Name</label>
-                                <input
-                                    id="roomName"
-                                    type="text"
-                                    placeholder="Room Name"
-                                    {...register("roomName", { required: true })}
-                                />
-                                {errors?.roomName && (
+                                <label htmlFor="roomType">Room Type</label>
+                                <select
+                                    id="roomType"
+                                    {...register("roomType", { required: true })}
+                                    className="border border-gray-300 rounded px-2 py-1"
+                                >
+                                    <option value="">Select Room Type</option>
+                                    <option value="single">Single</option>
+                                    <option value="double">Double</option>
+                                    <option value="family">Family</option>
+                                    <option value="lux">Lux</option>
+                                </select>
+                                {errors?.roomType && (
                                     <span className="text-red-500">This field is required</span>
                                 )}
                             </div>
@@ -84,6 +83,20 @@ function AddRoomForm({ roomType }) {
                                     {...register("price", { required: true })}
                                 />
                                 {errors?.price && (
+                                    <span className="text-red-500">This field is required</span>
+                                )}
+                            </div>
+
+                            {/* Number of Rooms */}
+                            <div className="grid gap-2">
+                                <label htmlFor="numberOfRooms">Number of Rooms</label>
+                                <input
+                                    id="numberOfRooms"
+                                    type="number"
+                                    placeholder="Number of Rooms"
+                                    {...register("numberOfRooms", { required: true, min: 1 })}
+                                />
+                                {errors?.numberOfRooms && (
                                     <span className="text-red-500">This field is required</span>
                                 )}
                             </div>
@@ -116,7 +129,6 @@ function AddRoomForm({ roomType }) {
                                 )}
                                 <span className="text-gray-500">Max 5 amenities, separate by commas.</span>
                             </div>
-
                         </CardContent>
                         <CardFooter>
                             <button
@@ -130,7 +142,7 @@ function AddRoomForm({ roomType }) {
                 </Card>
             </ScrollArea>
         </div>
-    )
+    );
 }
 
-export default AddRoomForm
+export default AddRoomForm;

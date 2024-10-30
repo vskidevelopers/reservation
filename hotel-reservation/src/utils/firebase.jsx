@@ -395,6 +395,47 @@ export const useHotelFunctions = () => {
     }
   };
 
+  const getHotelByUserId = async (userId) => {
+    try {
+      // Get a reference to the "Hotels" collection
+      const hotelsRef = collection(db, "Hotels");
+
+      // Query for hotels where userId matches
+      const querySnapshot = await getDocs(query(hotelsRef, where("userId", "==", userId)));
+
+      if (querySnapshot?.empty) {
+        console.log("No hotels found for this user.");
+        return {
+          success: false,
+          message: "No hotels found for this user."
+        };
+      } else {
+        // Create an array to store the hotel data
+        const hotelsData = [];
+
+        querySnapshot.forEach(doc => {
+          hotelsData.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+
+        return {
+          success: true,
+          hotelsData: hotelsData
+        };
+      }
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+      return {
+        success: false,
+        message: "Error fetching hotels",
+        error: error.message
+      };
+    }
+  };
+
+
   const verifyHotelById = async (id) => {
     const { createNewUser } = useAuthenticationFunctions()
     const selectedHotelResponse = await getHotelById(id)
@@ -474,14 +515,38 @@ export const useHotelFunctions = () => {
 
   };
 
+  const getHotelRooms = async (id) => {
+    const hotelDocRef = doc(db, "Hotels", id); // Reference to the specific
+    const hotelRoomsResponse = await getHotelById(id)
+    if (hotelRoomsResponse?.success) {
+      console.log("hotelRoomsResponse >> ", hotelRoomsResponse);
+
+    }
+
+  }
+
+  const addHotelRoom = async (id) => {
+    const hotelDocRef = doc(db, "Hotels", id); // Reference to the specific
+    const hotelRoomsResponse = await getHotelById(id)
+    if (hotelRoomsResponse?.success) {
+
+      console.log("hotelRoomsResponse >> ", hotelRoomsResponse);
+
+
+      console.log(`Hotel with ID ${id} has been successfully verified.`);
+    }
+
+    return {
+      addHotelRoom, getHotelRooms, createHotelDocument, getAllHotels, getHotelById, verifyHotelById, rejectHotelById, getAllApprovedHotels
+    }
+  }
 
   return {
-    createHotelDocument, getAllHotels, getHotelById, verifyHotelById, rejectHotelById, getAllApprovedHotels
+    addHotelRoom, getHotelRooms, createHotelDocument, getAllHotels, getHotelById, getHotelByUserId
   }
+
+
 }
-
-
-
 
 /////////////////////////////////////////
 //  ROOMS RELATED FUNCTIONS //

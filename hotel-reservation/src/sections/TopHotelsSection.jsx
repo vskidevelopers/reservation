@@ -14,7 +14,7 @@ function TopHotelsSection() {
     ];
 
     return (
-        <div className="py-12 bg-gray-50">
+        <div className="py-12 ">
             <div className="text-center mb-10">
                 <h2 className="text-4xl font-extrabold text-gray-900">
                     <span className="relative inline-block">

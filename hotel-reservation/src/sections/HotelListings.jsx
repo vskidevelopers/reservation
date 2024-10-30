@@ -7,7 +7,7 @@ function HotelListings({ hotels }) {
 
 
     return (
-        <div className="p-4">
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 p-4">
             {hotels.map((hotel, index) => (
                 <HotelListingCard key={index} hotel={hotel} />
             ))}
