@@ -9,12 +9,30 @@ import { Button } from '@/components/ui/button'
 
 function HotelProfile() {
     const { hotelId } = useParams()
+    console.log("hotel id via params >> ", hotelId);
+    console.log("hotel id type via params >> ", typeof (hotelId));
+
     const { getHotelById } = useHotelFunctions()
+
     const [hotel, setHotel] = useState()
-    const getHotel = async (id) => {
-        const response = await getHotelById(hotelId)
-        console.log("response from hotel profile >> ", response);
-        setHotel(response?.hotelData)
+    const getHotel = async () => {
+        if (hotelId != "null") {
+            const response = await getHotelById(hotelId)
+            console.log("response from hotel profile >> ", response);
+            setHotel(response?.hotelData)
+        } else {
+            console.log("HOTEL ID FROM PARAMS IS NULL!!");
+            console.log("switching to local hotel id... ");
+
+            const localHotelId = localStorage.getItem("hotelId")
+            console.log("localHotelId >> ", localHotelId)
+                ;
+            const response = await getHotelById(localHotelId)
+            console.log("response from hotel profile via local >> ", response);
+            setHotel(response?.hotelData)
+
+        }
+
     }
 
     useEffect(() => {

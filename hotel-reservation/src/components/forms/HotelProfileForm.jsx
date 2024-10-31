@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardFooter } from "../ui/card";
 import { useForm } from "react-hook-form";
+import { useHotelFunctions, useUploadImage } from "@/utils/firebase";
 
 function HotelProfileForm() {
     const [loading, setLoading] = useState(false);
     const [entrancePhoto, setEntrancePhoto] = useState(null);
     const [profilePhoto, setProfilePhoto] = useState(null);
+    const { updateHotelProfile } = useHotelFunctions()
+    const { uploadImage, imageURL } = useUploadImage()
+    const [imageUploadStatus, setImageUploadStatus] = useState(null);
 
     const {
         register,
@@ -14,51 +18,92 @@ function HotelProfileForm() {
         formState: { errors },
     } = useForm();
 
-    // Function to handle file uploads
-    const uploadFile = async (file, type) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("type", type);
-
-        try {
-            const response = await fetch("YOUR_UPLOAD_API_ENDPOINT", {
-                method: "POST",
-                body: formData,
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to upload");
-            }
-
-            const data = await response.json();
-            console.log("Uploaded successfully:", data);
-        } catch (error) {
-            console.error("Upload error:", error);
-        }
+    const currentDate = new Date();
+    const options = {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        timeZoneName: "short",
     };
+
+    const formattedDate = currentDate.toLocaleString("en-US", options);
 
     const onSubmit = async (data) => {
         setLoading(true);
         console.log("Hotel profile data for submission >>", data);
+        const localHotelProfileId = localStorage.getItem("hotelId")
+        try {
+            if (entrancePhoto && profilePhoto != null) {
+                const hotelProfileData = {
+                    ...data,
+                    entrancePhoto: entrancePhoto,
+                    profilePhoto: profilePhoto,
+                    createdAt: formattedDate,
+                };
+                console.log("hotel profile data to be used ... >> ", hotelProfileData);
+
+                const updateHotelProfileResponse = await updateHotelProfile(localHotelProfileId, hotelProfileData);
+                console.log("updateHotelProfileResponse >> ", updateHotelProfileResponse);
+                reset();
+                setLoading(false);
+            } else {
+                console.log("PICTURES not uploaded yet.");
+                console.log("entrance photo url  >> ", entrancePhoto);
+                console.log("profile photo url  >> ", profilePhoto);
+            }
+        } catch (error) {
+            console.error("An error occurred: ", error);
+            setLoading(false);
+        }
         setLoading(false);
         reset();
     };
 
-    const handleEntrancePhotoChange = (event) => {
+    const handlePhotoUpload = async (event) => {
         const file = event.target.files[0];
+        const photoType = event.target.name;
+        console.log(`File selected >> ${file} << Photo type selected >> ${photoType} <<`);
+
         if (file) {
-            setEntrancePhoto(file);
-            uploadFile(file, "entrance");
+            try {
+                console.log(`Uploading ${photoType} photo...`);
+
+                // Determine bucket name based on photo type
+                const bucketName = photoType === "profile" ? "profile/" : "entrance/";
+
+                // Set status to pending while waiting for upload
+                setImageUploadStatus("pending");
+
+                const uploadResult = await uploadImage(file, bucketName);
+                console.log("uploadResult.status >> ", uploadResult?.status);
+
+                if (uploadResult?.status === "success") {
+                    console.log(`${photoType} photo uploaded successfully`);
+
+                    // Conditionally set the state with the URL based on the photo type
+                    if (photoType === "profile") {
+                        setProfilePhoto(uploadResult.data); // Set state to the URL
+                    } else if (photoType === "entrance") {
+                        setEntrancePhoto(uploadResult.data); // Set state to the URL
+                    }
+
+                    setImageUploadStatus("success");
+                } else {
+                    console.error(`${photoType} photo upload failed.`);
+                    setImageUploadStatus("error");
+                }
+            } catch (error) {
+                console.error(`An error occurred during ${photoType} photo upload: `, error);
+                setImageUploadStatus("error");
+            }
+        } else {
+            console.error(`No ${photoType} photo selected.`);
         }
     };
 
-    const handleProfilePhotoChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setProfilePhoto(file);
-            uploadFile(file, "profile");
-        }
-    };
 
     return (
         <div className="flex w-full justify-center items-center py-10 ">
@@ -70,27 +115,46 @@ function HotelProfileForm() {
                     <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {/* Hotel Entrance Photo */}
                         <div className="grid gap-2">
-                            <label htmlFor="entrancePhoto" className="block text-sm font-medium">Hotel Entrance Photo</label>
+                            <label htmlFor="entrancePhoto" className="block text-sm font-medium">
+                                Hotel Entrance Photo
+                            </label>
                             <input
                                 id="entrancePhoto"
                                 type="file"
-                                onChange={handleEntrancePhotoChange}
+                                name="entrance"
+                                onChange={handlePhotoUpload}
                                 className="border border-gray-300 rounded px-2 py-1 w-full"
                             />
-                            {errors?.entrancePhoto && <span className="text-red-500">This field is required</span>}
+                            {imageUploadStatus === "pending" && <p>Uploading entrance photo...</p>}
+                            {imageUploadStatus === "success" && entrancePhoto && (
+                                <img src={entrancePhoto} alt="Entrance" />
+                            )}
+                            {imageUploadStatus === "error" && (
+                                <p className="text-red-500">Failed to upload entrance photo.</p>
+                            )}
                         </div>
 
                         {/* Hotel Profile Photo */}
                         <div className="grid gap-2">
-                            <label htmlFor="profilePhoto" className="block text-sm font-medium">Hotel Profile Photo</label>
+                            <label htmlFor="profilePhoto" className="block text-sm font-medium">
+                                Hotel Profile Photo
+                            </label>
                             <input
                                 id="profilePhoto"
                                 type="file"
-                                onChange={handleProfilePhotoChange}
+                                name="profile"
+                                onChange={handlePhotoUpload}
                                 className="border border-gray-300 rounded px-2 py-1 w-full"
                             />
-                            {errors?.profilePhoto && <span className="text-red-500">This field is required</span>}
+                            {imageUploadStatus === "pending" && <p>Uploading profile photo...</p>}
+                            {imageUploadStatus === "success" && profilePhoto && (
+                                <img src={profilePhoto} alt="Profile" />
+                            )}
+                            {imageUploadStatus === "error" && (
+                                <p className="text-red-500">Failed to upload profile photo.</p>
+                            )}
                         </div>
+
 
                         {/* Hotel Bio */}
                         <div className="grid gap-2 md:col-span-2">

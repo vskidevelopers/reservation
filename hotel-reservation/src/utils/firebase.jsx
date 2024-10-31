@@ -33,10 +33,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 export const auth = getAuth(app);
+const storage = getStorage(app)
 
 ////////////////////////  /////
 // GlobalUploadImageFunction //
 ////////////////////////  /////
+
 
 export const useUploadImage = () => {
   const [imageUploadProgress, setImageUploadProgress] = useState(0);
@@ -49,10 +51,9 @@ export const useUploadImage = () => {
       status: "pending",
     };
 
-    console.log("uploading_image >>", file);
-    console.log("storage_bucket >>", bucketName);
+    console.log("Uploading image >>", file);
+    console.log("Storage bucket >>", bucketName);
 
-    // Upload file and metadata to the object 'images/mountains.jpg'
     const metadata = {
       contentType: "image/jpeg",
     };
@@ -62,56 +63,47 @@ export const useUploadImage = () => {
       setImageUploadLoading(true);
       const uploadTask = uploadBytesResumable(storageRef, file, metadata);
 
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("upload_is " + progress + "% done");
-          setImageUploadProgress(parseInt(parseFloat(progress).toFixed(0)));
+      await new Promise((resolve, reject) => {
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log(`Upload is ${progress}% done`);
+            setImageUploadProgress(parseInt(progress.toFixed(0)));
 
-          switch (snapshot.state) {
-            case "paused":
-              console.log("upload_is_paused");
-              break;
-            case "running":
-              console.log("upload_is_running");
-              break;
+            switch (snapshot.state) {
+              case "paused":
+                console.log("Upload is paused");
+                break;
+              case "running":
+                console.log("Upload is running");
+                break;
+            }
+          },
+          (error) => {
+            result.status = "error";
+            result.error = error;
+            reject(error);
+          },
+          async () => {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            console.log("File available at", downloadURL);
+            result.data = downloadURL;
+            result.status = "success";
+            setImageUploadLoading(false);
+            resolve(downloadURL);
           }
-        },
-        (error) => {
-          // Handle errors
-          result.status = "error";
-          result.error = error;
-        },
-        () => {
-          // Upload completed successfully, now we can get the download URL
-          getDownloadURL(uploadTask.snapshot.ref)
-            .then((downloadURL) => {
-              console.log("File available at", downloadURL);
-              setImageURL(downloadURL);
-              setImageUploadLoading(false);
-              // Update the result object with the download URL and status
-              result.data = downloadURL;
-              result.status = "success";
-            })
-            .catch((error) => {
-              // Handle errors when getting the download URL
-              result.status = "error";
-              result.error = error;
-            });
-        }
-      );
+        );
+      });
     } catch (err) {
-      // Handle any other errors that may occur
-      console.log("the_following_error_occurred >>", err);
+      console.error("Error occurred >>", err);
       result.status = "error";
       result.error = err;
     }
 
-    return result; // Return the result object
+    return result;
   };
+
 
   return { imageUploadProgress, imageURL, imageUploadLoading, uploadImage };
 };
@@ -536,13 +528,28 @@ export const useHotelFunctions = () => {
       console.log(`Hotel with ID ${id} has been successfully verified.`);
     }
 
-    return {
-      addHotelRoom, getHotelRooms, createHotelDocument, getAllHotels, getHotelById, verifyHotelById, rejectHotelById, getAllApprovedHotels
-    }
   }
+  const updateHotelProfile = async (id, data) => {
+    const hotelDocRef = doc(db, "Hotels", id); // Reference to the specific hotel document
+
+    try {
+      // Get the current hotel document
+      const hotelDoc = await getDoc(hotelDocRef);
+
+      if (hotelDoc.exists()) {
+        // Update the hotel document with the new data
+        await updateDoc(hotelDocRef, data);
+        return { success: true, message: "Hotel profile updated successfully!" };
+      } else {
+        return { success: false, message: "Hotel document does not exist!" };
+      }
+    } catch (error) {
+      return { success: false, message: `Error updating hotel profile: ${error.message}` };
+    }
+  };
 
   return {
-    addHotelRoom, getHotelRooms, createHotelDocument, getAllHotels, getHotelById, getHotelByUserId
+    addHotelRoom, updateHotelProfile, getHotelRooms, createHotelDocument, rejectHotelById, verifyHotelById, getAllHotels, getHotelById, getHotelByUserId
   }
 
 
