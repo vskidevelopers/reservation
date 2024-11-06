@@ -7,8 +7,8 @@ function HotelProfileForm() {
     const [loading, setLoading] = useState(false);
     const [entrancePhoto, setEntrancePhoto] = useState(null);
     const [profilePhoto, setProfilePhoto] = useState(null);
-    const { updateHotelProfile } = useHotelFunctions()
-    const { uploadImage, imageURL } = useUploadImage()
+    const { updateHotelProfile } = useHotelFunctions();
+    const { uploadImage, imageURL } = useUploadImage();
     const [imageUploadStatus, setImageUploadStatus] = useState(null);
 
     const {
@@ -33,26 +33,22 @@ function HotelProfileForm() {
 
     const onSubmit = async (data) => {
         setLoading(true);
-        console.log("Hotel profile data for submission >>", data);
-        const localHotelProfileId = localStorage.getItem("hotelId")
+        const localHotelProfileId = localStorage.getItem("hotelId");
+        const coreValuesArray = data?.coreValues.split(',').map((coreVals) => coreVals.trim());
         try {
-            if (entrancePhoto && profilePhoto != null) {
+            if (entrancePhoto && profilePhoto) {
                 const hotelProfileData = {
                     ...data,
-                    entrancePhoto: entrancePhoto,
-                    profilePhoto: profilePhoto,
+                    entrancePhoto,
+                    profilePhoto,
                     createdAt: formattedDate,
                 };
-                console.log("hotel profile data to be used ... >> ", hotelProfileData);
-
                 const updateHotelProfileResponse = await updateHotelProfile(localHotelProfileId, hotelProfileData);
                 console.log("updateHotelProfileResponse >> ", updateHotelProfileResponse);
                 reset();
                 setLoading(false);
             } else {
-                console.log("PICTURES not uploaded yet.");
-                console.log("entrance photo url  >> ", entrancePhoto);
-                console.log("profile photo url  >> ", profilePhoto);
+                console.log("Photos not uploaded yet.");
             }
         } catch (error) {
             console.error("An error occurred: ", error);
@@ -65,45 +61,25 @@ function HotelProfileForm() {
     const handlePhotoUpload = async (event) => {
         const file = event.target.files[0];
         const photoType = event.target.name;
-        console.log(`File selected >> ${file} << Photo type selected >> ${photoType} <<`);
-
         if (file) {
             try {
-                console.log(`Uploading ${photoType} photo...`);
-
-                // Determine bucket name based on photo type
-                const bucketName = photoType === "profile" ? "profile/" : "entrance/";
-
-                // Set status to pending while waiting for upload
                 setImageUploadStatus("pending");
-
+                const bucketName = photoType === "profile" ? "profile/" : "entrance/";
                 const uploadResult = await uploadImage(file, bucketName);
-                console.log("uploadResult.status >> ", uploadResult?.status);
 
                 if (uploadResult?.status === "success") {
-                    console.log(`${photoType} photo uploaded successfully`);
-
-                    // Conditionally set the state with the URL based on the photo type
-                    if (photoType === "profile") {
-                        setProfilePhoto(uploadResult.data); // Set state to the URL
-                    } else if (photoType === "entrance") {
-                        setEntrancePhoto(uploadResult.data); // Set state to the URL
-                    }
-
+                    if (photoType === "profile") setProfilePhoto(uploadResult.data);
+                    else if (photoType === "entrance") setEntrancePhoto(uploadResult.data);
                     setImageUploadStatus("success");
                 } else {
-                    console.error(`${photoType} photo upload failed.`);
                     setImageUploadStatus("error");
                 }
             } catch (error) {
-                console.error(`An error occurred during ${photoType} photo upload: `, error);
+                console.error("Upload error: ", error);
                 setImageUploadStatus("error");
             }
-        } else {
-            console.error(`No ${photoType} photo selected.`);
         }
     };
-
 
     return (
         <div className="flex w-full justify-center items-center py-10 ">
@@ -154,7 +130,6 @@ function HotelProfileForm() {
                                 <p className="text-red-500">Failed to upload profile photo.</p>
                             )}
                         </div>
-
 
                         {/* Hotel Bio */}
                         <div className="grid gap-2 md:col-span-2">
@@ -208,32 +183,20 @@ function HotelProfileForm() {
                             {errors?.coreValues && <span className="text-red-500">This field is required</span>}
                         </div>
 
-                        {/* Contact Information */}
+                        {/* City */}
                         <div className="grid gap-2 md:col-span-1">
-                            <label htmlFor="contact" className="block text-sm font-medium">Contact Information</label>
+                            <label htmlFor="city" className="block text-sm font-medium">City</label>
                             <input
-                                id="contact"
+                                id="city"
                                 type="text"
-                                placeholder="Phone or Email"
-                                {...register("contact", { required: true })}
+                                placeholder="Hotel City"
+                                {...register("city", { required: true })}
                                 className="border border-gray-300 rounded px-2 py-1 w-full"
                             />
-                            {errors?.contact && <span className="text-red-500">This field is required</span>}
-                        </div>
-
-                        {/* Location */}
-                        <div className="grid gap-2 md:col-span-1">
-                            <label htmlFor="location" className="block text-sm font-medium">Location</label>
-                            <input
-                                id="location"
-                                type="text"
-                                placeholder="Hotel Location"
-                                {...register("location", { required: true })}
-                                className="border border-gray-300 rounded px-2 py-1 w-full"
-                            />
-                            {errors?.location && <span className="text-red-500">This field is required</span>}
+                            {errors?.city && <span className="text-red-500">This field is required</span>}
                         </div>
                     </CardContent>
+
                     <CardFooter>
                         <button
                             className="border border-sky-500 rounded w-full py-2 hover:bg-sky-500"

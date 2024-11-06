@@ -1,15 +1,52 @@
+import { useBookingFunctions } from "@/utils/firebase";
 import React from "react";
 import { useForm } from "react-hook-form";
 
-function RoomBookingForm() {
+function RoomBookingForm({ hotelId, roomId, roomType }) {
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
-      roomType: "Double Room",
+      roomType: roomType,
     },
   });
-  const onSubmit = (data) => {
-    console.log("data to use >> ", data);
+
+  const { postBooking } = useBookingFunctions()
+
+  const currentDate = new Date();
+  const options = {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    timeZoneName: "short",
   };
+
+  const formattedDate = currentDate.toLocaleString("en-US", options);
+
+  const onSubmit = async (data) => {
+    const bookingData = { ...data, hotelId, roomId, createdAt: formattedDate };
+    console.log("data to use >> ", bookingData);
+
+    try {
+      console.log("booking ... ");
+      const postBookingResponse = await postBooking(bookingData);
+      console.log("postBookingResponse >> ", postBookingResponse);
+
+      // Check if the response indicates success
+      if (postBookingResponse?.status === 200 || postBookingResponse?.success) {
+        alert("We have received your booking information. We will get back to you soon.");
+        reset();
+      } else {
+        // Handle non-successful response case
+        alert("There was an issue with your booking. Please try again later.");
+      }
+    } catch (error) {
+      console.error("An error occurred: ", error);
+      alert("An error occurred while processing your booking. Please try again.");
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid  md:grid-cols-2 gap-3 mt-4 ">
@@ -104,10 +141,10 @@ function RoomBookingForm() {
               className="block w-full mt-1 border border-emerald-500 focus:border-1 focus:border-emerald-600"
               required
             >
-              <option>Single Room</option>
-              <option>Single Room Double Bed</option>
-              <option>Double Room</option>
-              <option> Duluxe Room</option>
+              <option>Single Bed</option>
+              <option>Double Bed</option>
+              <option>Family Room</option>
+              <option> Lux Room</option>
             </select>
           </label>
         </div>

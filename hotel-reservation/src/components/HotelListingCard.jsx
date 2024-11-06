@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom"
 
 const HotelListingCard = ({ hotel }) => {
     console.log("hotel data for lising card >> ", hotel);
@@ -23,9 +24,9 @@ const HotelListingCard = ({ hotel }) => {
     }
 
     return (
-        <div className="flex border rounded-lg shadow-md p-4 bg-white my-4">
+        <div className="!flex-col !sm:flex-row border rounded-lg shadow-md p-4 bg-white my-4">
             {/* Hotel Image */}
-            <div className="w-1/3 pr-4">
+            <div className="w-full sm:w-1/3 pr-4">
                 <img
                     src={hotelsData?.image}
                     alt={hotelsData?.name}
@@ -34,7 +35,7 @@ const HotelListingCard = ({ hotel }) => {
             </div>
 
             {/* Hotel Details */}
-            <div className="w-2/3 flex flex-col justify-between">
+            <div className="w-full sm:w-2/3 flex flex-col justify-between">
                 <div>
                     {/* Hotel Name and Location */}
                     <h3 className="text-xl font-semibold text-gray-800">{hotel?.hotelName}</h3>
@@ -68,7 +69,7 @@ const HotelListingCard = ({ hotel }) => {
                             <p className="text-sm line-through text-gray-500">${hotelsData?.originalPrice}</p>
                         )}
                     </div>
-                    <Link to="/hotel/1">
+                    <Link to={`/hotels/${hotel?.id}`}>
                         <Button className="bg-blue-600 text-white px-4 py-2 rounded-lg">View More</Button>
                     </Link>
                 </div>

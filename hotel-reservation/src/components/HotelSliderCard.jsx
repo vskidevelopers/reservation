@@ -31,14 +31,19 @@ const HotelSliderCard = (props) => {
                 </p>
 
                 {/* Learn More Button */}
-                <Link to={slide?.title}>
-                    <Button
-                        className="inline-block bg-transparent border border-black text-black px-6 py-2 rounded-full hover:bg-black hover:text-white transition-all"
-                    >
 
-                        Read More
-                    </Button>
-                </Link>
+                <Button
+                    onClick={() => {
+                        alert("Bookings for featured hotels are currently not available.");
+                    }}
+                    className="inline-block bg-transparent border border-black text-black px-6 py-2 rounded-full hover:bg-black hover:text-white transition-all"
+                    aria-label="Show information about bookings"
+                    role="alert"
+                >
+                    Read More
+                </Button>
+
+
             </div>
         </div>
     );

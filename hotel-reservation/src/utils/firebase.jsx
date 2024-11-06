@@ -427,6 +427,51 @@ export const useHotelFunctions = () => {
     }
   };
 
+  const getHotelByLocation = async (location) => {
+    try {
+      // Get a reference to the "Hotels" collection
+      const hotelsRef = collection(db, "Hotels");
+
+      // Query for hotels where location matches
+      const querySnapshot = await getDocs(query(
+        hotelsRef,
+        where("hotelProfile.city", "==", location),
+        where("contactNumber", "==", location)
+      ));
+
+
+      if (querySnapshot?.empty) {
+        console.log("No hotels found for this location.");
+        return {
+          success: false,
+          message: "No hotels found for this loaction."
+        };
+      } else {
+        // Create an array to store the hotel data
+        const hotelsData = [];
+
+        querySnapshot.forEach(doc => {
+          hotelsData.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+
+        return {
+          success: true,
+          hotelsData: hotelsData
+        };
+      }
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+      return {
+        success: false,
+        message: "Error fetching hotels",
+        error: error.message
+      };
+    }
+  }
+
 
   const verifyHotelById = async (id) => {
     const { createNewUser } = useAuthenticationFunctions()
@@ -538,7 +583,7 @@ export const useHotelFunctions = () => {
 
       if (hotelDoc.exists()) {
         // Update the hotel document with the new data
-        await updateDoc(hotelDocRef, data);
+        await updateDoc(hotelDocRef, { hotelProfile: data });
         return { success: true, message: "Hotel profile updated successfully!" };
       } else {
         return { success: false, message: "Hotel document does not exist!" };
@@ -549,7 +594,7 @@ export const useHotelFunctions = () => {
   };
 
   return {
-    addHotelRoom, updateHotelProfile, getHotelRooms, createHotelDocument, rejectHotelById, verifyHotelById, getAllHotels, getHotelById, getHotelByUserId
+    addHotelRoom, getHotelByLocation, getAllApprovedHotels, updateHotelProfile, getHotelRooms, createHotelDocument, rejectHotelById, verifyHotelById, getAllHotels, getHotelById, getHotelByUserId
   }
 
 
@@ -576,13 +621,25 @@ export const useRoomFunctions = () => {
   const getRooms = async () => {
     setRoomsLoading(true);
     setError(false);
-    const roomsRef = collection(db, "Rooms");
+    const roomsRef = collection(db, "Hotels");
     try {
       const querySnapshot = await getDocs(roomsRef);
-      const roomsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const roomsData = querySnapshot.docs.map((doc) => {
+        const hotelData = doc.data();
+        const rooms = hotelData.rooms || {
+          single: 0,
+          double: 0,
+          family: 0,
+          lux: 0,
+        }; // Default to empty object if 'rooms' doesn't exist
+
+        return {
+          id: doc.id,
+          ...hotelData,
+          rooms,
+        };
+      });
+
       setRooms(roomsData);
       console.log("Rooms >>", roomsData);
       setRoomsLoading(false);
@@ -593,17 +650,29 @@ export const useRoomFunctions = () => {
       console.error("An error occured >>", err);
     }
   };
+
   useEffect(() => {
     getRooms();
   }, []);
 
-  //  Add new Room to Firebase
-  const addRoom = async (data) => {
+  const addRoom = async (data, hotelId, roomType) => {
     setLoading(true);
     setError(false);
+    // 1. Create the Room Document
+    const roomRef = collection(db, "Rooms", roomType, roomType);
     try {
-      const roomRef = doc(collection(db, "Rooms"));
-      await setDoc(roomRef, data);
+      const newRoomRef = doc(roomRef);
+      console.log("roomRef >> ", roomRef);
+
+      await setDoc(newRoomRef, { ...data, id: newRoomRef.id });
+
+      // 2. Update the Hotel Document
+      const hotelRef = doc(db, "Hotels", hotelId);
+      await updateDoc(hotelRef, {
+        [`rooms.${roomType}`]: newRoomRef.id, // Dynamically create the field name
+      });
+
+      alert(`room added successfully`);
       setSuccess(true);
       setLoading(false);
       return { success: true, message: "Room added successfully" };
@@ -616,6 +685,7 @@ export const useRoomFunctions = () => {
     }
   };
 
+
   const deleteRoom = async (id) => {
     try {
       await deleteDoc(doc(db, "Rooms", id));
@@ -624,10 +694,71 @@ export const useRoomFunctions = () => {
     }
   };
 
+  const getRoomsById = async (id) => {
+    setRoomsLoading(true);
+    setError(false);
+
+    try {
+      const roomDocRef = doc(db, "Hotels", id); // Reference to specific hotel document by ID
+      const roomDocSnapshot = await getDoc(roomDocRef);
+
+      if (roomDocSnapshot.exists()) {
+        const hotelData = roomDocSnapshot.data();
+        const rooms = hotelData.rooms || {
+          single: 0,
+          double: 0,
+          family: 0,
+          lux: 0,
+        }; // Default to empty object if 'rooms' doesn't exist
+
+        const roomData = {
+          id: roomDocSnapshot.id,
+          ...hotelData,
+          rooms,
+        };
+
+        setRooms(roomData);
+        console.log("Room Data by ID >>", roomData);
+        setRoomsLoading(false);
+        setError(null);
+        return roomData; // Return room data in case you want to use it directly
+      } else {
+        console.log("No such document found!");
+        setRooms(null);
+        setRoomsLoading(false);
+        return null;
+      }
+    } catch (err) {
+      setError(err);
+      setRoomsLoading(false);
+      console.error("An error occurred >>", err);
+      return null;
+    }
+  };
+
+  const getRoomsFromCollection = async (roomId, roomType) => {
+    const roomRef = collection(db, "Rooms", roomType, roomType);
+    const specificRoomRef = doc(roomRef, roomId)
+    try {
+      const roomSnapshot = await getDoc(specificRoomRef);
+
+      if (roomSnapshot.exists()) {
+        return roomSnapshot.data(); // Returns the room data as an object
+      } else {
+        return null; // Room not found
+      }
+    } catch (error) {
+      console.error("Error getting room:", error);
+      return null;
+    }
+  }
+
   return {
     getRooms,
     addRoom,
+    getRoomsById,
     deleteRoom,
+    getRoomsFromCollection,
     loading,
     error,
     success,
@@ -670,11 +801,29 @@ export const useBookingFunctions = () => {
     }
   };
 
+  const getBookingsForHotel = async (hotelId) => {
+    try {
+      const bookingsRef = collection(db, "Bookings");
+      const q = query(bookingsRef, where("hotelId", "==", hotelId)); // Filter by hotelId
+      const querySnapshot = await getDocs(q);
+      const bookingsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      return { success: true, data: bookingsData };
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
   // Post a new booking
   const postBooking = async (data) => {
     try {
-      const bookingRef = await addDoc(collection(db, "Bookings"), data);
-      return { success: true, id: bookingRef.id, message: "Booking created successfully" };
+      const bookingRef = collection(db, "Bookings")
+      const newBookingRef = doc(bookingRef)
+      await setDoc(newBookingRef, data);
+      return { success: true, id: newBookingRef.id, message: "Booking created successfully" };
     } catch (error) {
       console.error("Error creating booking:", error);
       return { success: false, error: error.message };
@@ -723,6 +872,7 @@ export const useBookingFunctions = () => {
     approveBooking,
     rejectBooking,
     deleteBooking,
+    getBookingsForHotel
   };
 };
 

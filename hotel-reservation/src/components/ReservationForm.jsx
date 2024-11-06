@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom"
 
 const ReservationForm = () => {
     const {
@@ -7,8 +8,11 @@ const ReservationForm = () => {
         formState: { errors },
     } = useForm();
 
+    const navigate = useNavigate()
+
     const onSubmit = async (data) => {
         console.log("reservation data >> ", data);
+        navigate(`/explore?type=${data?.location}`);
     }
 
 

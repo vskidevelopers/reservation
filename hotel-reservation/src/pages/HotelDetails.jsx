@@ -4,10 +4,27 @@ import { useParams } from "react-router-dom"
 import { Star, ScanEye, Lightbulb } from "lucide-react"
 import HotelBioSection from "@/sections/HotelBioSection";
 import Rooms from "./Rooms";
+import { useHotelFunctions } from "@/utils/firebase";
+import { useEffect, useState } from "react";
 
 function HotelDetails() {
     const { hotelId } = useParams()
+    const { getHotelById } = useHotelFunctions()
     console.log("hotel Id >> ", hotelId);
+
+
+    const [hotelDetails, setHotelDetails] = useState()
+    const getHotel = async () => {
+        const fetchHotelResponse = await getHotelById(hotelId)
+        console.log("fetchHotelResponse >> ", fetchHotelResponse);
+        setHotelDetails(fetchHotelResponse?.hotelData)
+
+    }
+
+    useEffect(() => {
+        getHotel()
+    }, [])
+
 
 
     const hotel = {
@@ -46,31 +63,29 @@ function HotelDetails() {
                             <FloatingCards
                                 basis="basis-1/4"
                                 title="Our Mission"
-                                description="Empowering businesses through innovative marketing solutions for
-          enhanced brand visibility, customer engagement, and accelerated
-          growth. Exceptional services driving long-term success."
+                                description={hotelDetails?.hotelProfile?.mission}
                                 icon={<Star className="h-8 w-8 text-[#FDB715] mr-5" />}
                             />
                             <FloatingCards
                                 basis="basis-1/4"
                                 title="Our Vision"
-                                description="To be a global leader in transformative marketing solutions, revolutionizing the industry with innovative strategies and technologies. We are committed to delivering outstanding results, fostering excellence, and sustainable growth."
+                                description={hotelDetails?.hotelProfile?.vision}
                                 icon={<ScanEye className="h-8 w-8 text-[#FDB715] mr-5" />}
                             />
                             <FloatingCards
                                 basis="basis-1/2"
                                 list={true}
                                 title="Our Core Values"
-                                description={coreValues}
+                                description={hotelDetails?.hotelProfile?.coreValues || coreValues}
                                 icon={<Lightbulb className="h-8 w-8 text-[#FDB715] mr-5" />}
                             />
                         </div>
                     </div>
 
                     <div className="mt-16">
-                        <HotelBioSection hotel={hotelData} />
+                        <HotelBioSection hotel={hotelDetails} />
                         <div className="pt-5">
-                            <Rooms />
+                            <Rooms rooms={hotelDetails?.rooms} />
                         </div>
                     </div>
                 </div></div>

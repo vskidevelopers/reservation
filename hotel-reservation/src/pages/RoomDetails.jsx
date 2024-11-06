@@ -1,32 +1,33 @@
 import React, { useEffect, useState } from "react";
 import HeroSection from "../components/HeroSection";
-// import { cardsData } from "../utils/RoomsData";
-import { useParams } from "react-router-dom";
+
+import { useParams, useSearchParams } from "react-router-dom";
 import RoomBookingForm from "../components/RoomBookingForm";
 import { useRoomFunctions } from "../utils/firebase";
 import { cardsData } from "../utils/RoomsData";
 import NotFoundPage from "./NotFoundPage";
 
 function RoomDetails() {
-  const { rooms } = useRoomFunctions();
+
   const [room, setRoom] = useState({});
-  const { id } = useParams();
-  const cardsData = rooms;
+  const { roomId, hotelId } = useParams();
+  const [searchParams] = useSearchParams();
+  const { getRoomsFromCollection } = useRoomFunctions()
+  const roomType = searchParams.get("roomType");
 
+
+  const getRoom = async () => {
+    const roomDetails = await getRoomsFromCollection(roomId, roomType);
+    console.log("roomDetails >> ", roomDetails);
+    setRoom(roomDetails)
+
+  };
   useEffect(() => {
-    const getRoom = async () => {
-      const roomData = cardsData.filter((room) => room.id === id);
-
-      console.log("room Id >> ", id);
-      console.log("room Id Type >> ", typeof (id));
-      console.log("room data >> ", roomData);
-      setRoom(roomData[0]);
-    };
 
     getRoom();
-  }, [id]);
+  }, []);
 
-  if (id === "undefined" || undefined) {
+  if (roomId === "undefined" || undefined) {
     return (
       <div className="flex justify-center items-center h-screen">
         <NotFoundPage />
@@ -48,8 +49,8 @@ function RoomDetails() {
           <div className="px-3 md:col-span-2">
             <div className="w-full h-auto mb-4">
               <img
-                src={room?.roomImage}
-                alt={room?.roomTitle}
+                src={room?.roomPhoto}
+                alt={room?.roomType}
                 className="w-full object-cover object-center rounded shadow-md"
               />
             </div>
@@ -59,10 +60,10 @@ function RoomDetails() {
                 {room?.roomType}
               </h2>
               <h2 className="mt-2 max-w-sm text-md font-semibold text-teal-600">
-                {room?.roomPrice ? "Price  : " : ""}
-                {room?.roomPrice}
+                {room?.price ? "Price  : " : ""}
+                {room?.price}
               </h2>
-              <p>{room?.roomDescription}</p>
+              <p>{room?.description}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
@@ -74,7 +75,7 @@ function RoomDetails() {
                 Book This Room
               </h2>
             </div>
-            <RoomBookingForm />
+            <RoomBookingForm hotelId={hotelId} roomId={roomId} roomType={room?.roomType} />
           </div>
         </div>
       </div>

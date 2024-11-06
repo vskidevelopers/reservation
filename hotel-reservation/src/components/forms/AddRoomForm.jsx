@@ -2,10 +2,15 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardFooter } from "../ui/card";
 import { ScrollArea } from "../ui/scroll-area";
 import { useForm } from "react-hook-form";
+import { useRoomFunctions, useUploadImage } from "@/utils/firebase";
 
 function AddRoomForm() {
     const [loading, setLoading] = useState(false);
+    const [imageUploadStatus, setImageUploadStatus] = useState(null);
+    const [roomPhoto, setRoomPhoto] = useState(null);
 
+    const { uploadImage } = useUploadImage()
+    const { addRoom } = useRoomFunctions()
     const {
         register,
         handleSubmit,
@@ -13,13 +18,44 @@ function AddRoomForm() {
         formState: { errors },
     } = useForm();
 
-    const handleImageUpload = (event) => {
-        const file = event.target.files[0];
-        console.log("image file >> ", file);
+    const localHotelProfileId = localStorage.getItem("hotelId")
 
-        // Handle the image upload logic and get the download URL
-        // For example:
-        // uploadImage(file).then(url => setImageURL(url));
+    const currentDate = new Date();
+    const options = {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        timeZoneName: "short",
+    };
+
+    const formattedDate = currentDate.toLocaleString("en-US", options);
+
+    const handleImageUpload = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            try {
+                setImageUploadStatus("pending");
+                const bucketName = "rooms/"
+                const uploadResult = await uploadImage(file, bucketName);
+
+                if (uploadResult?.status === "success") {
+                    console.log("uploadResult >> ", uploadResult);
+
+                    setRoomPhoto(uploadResult.data);
+                    setImageUploadStatus("success");
+                } else {
+                    setImageUploadStatus("error");
+                    console.log("uploadResult >> ", uploadResult);
+
+                }
+            } catch (error) {
+                console.error("Upload error: ", error);
+                setImageUploadStatus("error");
+            }
+        }
     };
 
     const onSubmit = async (data) => {
@@ -28,10 +64,26 @@ function AddRoomForm() {
         // Process the form data, including imageURL and amenities as an array
         const amenitiesArray = data?.amenities.split(',').map((amenity) => amenity.trim());
         // Send the data to your backend API or handle it as needed
-        const roomData = { ...data, amenities: amenitiesArray };
-        console.log("room data for submission >> ", roomData);
+        const roomType = data?.roomType
+        try {
+            if (roomPhoto) {
+                const roomData = { ...data, amenities: amenitiesArray, roomPhoto, createdAt: formattedDate };
+                console.log("room data for submission >> ", roomData);
 
-        // await saveRoomData({ ...data, image: imageURL, amenities: amenitiesArray });
+                const addRoomResponse = await addRoom(roomData, localHotelProfileId, roomType)
+                console.log("add room response >> ", addRoomResponse);
+                reset()
+                setLoading(false)
+            } else {
+                alert("Please upload a photo")
+            }
+        } catch (error) {
+            console.log("ann errror occured >> ", error);
+            setLoading(false);
+
+        }
+
+
         setLoading(false);
         reset();
     };

@@ -8,7 +8,7 @@ export default function HotelBioSection({ hotel }) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Hotel Image */}
                 <div>
-                    <img src={hotelImage} alt={`${hotel.name} image`} className="rounded-md" />
+                    <img src={hotel?.hotelProfile?.profilePhoto} alt={`${hotel?.hotelName} image`} className="rounded-md" />
                 </div>
 
                 {/* Hotel Description */}
@@ -16,11 +16,11 @@ export default function HotelBioSection({ hotel }) {
                     <div className="relative flex flex-col justify-center items-start py-10">
                         <div className="w-full text-start">
                             <h2 className="text-[#FDB715] text-md font-semibold uppercase">
-                                Welcome to {hotel.name}
+                                Welcome to {hotel?.hotelName}
                             </h2>
                             <div className="w-full md:w-3/4">
                                 <h1 className="text-3xl font-bold capitalize">
-                                    {hotel.tagline || "Experience Unmatched Comfort and Luxury"}
+                                    {hotel?.tagline ? hotel.tagline : "Experience Unmatched Comfort and Luxury"}
                                 </h1>
                             </div>
                         </div>
@@ -33,7 +33,7 @@ export default function HotelBioSection({ hotel }) {
                         {/* Hotel Bio */}
                         <div className="my-5">
                             <p>
-                                {hotel.description || "Our hotel offers a unique blend of luxury, comfort, and exceptional service. From our stunning rooms to our state-of-the-art facilities, we strive to provide our guests with a memorable experience. Our team is dedicated to ensuring your stay is nothing short of exceptional, whether you're here for business or leisure."}
+                                {hotel?.hotelProfile?.bio || "Our hotel offers a unique blend of luxury, comfort, and exceptional service. From our stunning rooms to our state-of-the-art facilities, we strive to provide our guests with a memorable experience. Our team is dedicated to ensuring your stay is nothing short of exceptional, whether you're here for business or leisure."}
                             </p>
                         </div>
                     </div>

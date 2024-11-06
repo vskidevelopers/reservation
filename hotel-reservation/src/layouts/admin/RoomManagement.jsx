@@ -35,10 +35,48 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
+import { useRoomFunctions } from "@/utils/firebase";
+import { useEffect, useState } from "react";
 
 
 
 function RoomManagement() {
+
+    const { getRoomsById, rooms } = useRoomFunctions()
+    const localId = localStorage.getItem("hotelId")
+    console.log("localId >> ", localId);
+    const [roomsData, setRoomsData] = useState([])
+
+
+    const getRoom = async () => {
+        const roomResponse = await getRoomsById(localId)
+        console.log("room response >> ", roomResponse);
+
+        setRoomsData(roomResponse?.rooms)
+
+    }
+
+    const hasAvailableRooms = roomsData && Object.values(roomsData).some((value) => value !== 0);
+
+    console.log("hasAvailableRooms >>> ", hasAvailableRooms);
+
+
+    useEffect(() => {
+
+        console.log("Updated rooms from state >> ", rooms);
+    }, [rooms])
+
+    useEffect(() => {
+        getRoom()
+    }, [])
+
+    console.log("roomsData >> ", roomsData);
+
+
+
+
+
+
     return (
         <div className="h-full  w-full ">
             <Tabs default-value="single">
@@ -67,7 +105,7 @@ function RoomManagement() {
                                                     Add A Room
                                                 </DialogTitle>
                                             </DialogHeader>
-                                            <AddRoomForm roomType="Single" />
+                                            <AddRoomForm />
                                             {/* Add ew Single-Bed Room Form will be used here */}
 
                                         </DialogContent>
@@ -75,100 +113,41 @@ function RoomManagement() {
                                 </Card>
                             </Dialog>
 
-
-                            <div className="grid gap-4 sm:grid-cols-2 ">
-                                <Card x-chunk="dashboard-05-chunk-1">
-                                    <CardHeader className="pb-2">
-                                        <CardDescription> Single Beds</CardDescription>
-                                        <CardTitle className="text-4xl"> 11 </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-xs text-muted-foreground">
-                                            🛁 Hot Shower
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <TabsList className="bg-transparent">
-                                            <TabsTrigger value="single" >
-                                                <Button>View Room</Button>
-
-                                            </TabsTrigger>
-                                        </TabsList>
-                                    </CardFooter>
-
-                                </Card>
-
-
-                                <Card x-chunk="dashboard-05-chunk-1">
-                                    <CardHeader className="pb-2">
-                                        <CardDescription> Double Beds</CardDescription>
-                                        <CardTitle className="text-4xl"> 5 </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-xs text-muted-foreground">
-                                            🛁 Hot Shower
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <TabsList className="bg-transparent">
-                                            <TabsTrigger value="double">
-                                                <Button>View Room</Button>
-                                            </TabsTrigger>
-                                        </TabsList>
-                                    </CardFooter>
-
-                                </Card>
-
-
-
-                                <Card x-chunk="dashboard-05-chunk-1">
-                                    <CardHeader className="pb-2">
-                                        <CardDescription> Lux Rooms</CardDescription>
-                                        <CardTitle className="text-4xl"> 2 </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-xs text-muted-foreground">
-                                            🛁 Hot Shower
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <TabsList className="bg-transparent">
-                                            <TabsTrigger value="lux">
-                                                <Button>View Room</Button>
-                                            </TabsTrigger>
-                                        </TabsList>
-                                    </CardFooter>
-
-                                </Card>
-
-
-                                <Card x-chunk="dashboard-05-chunk-1">
-                                    <CardHeader className="pb-2">
-                                        <CardDescription> Family Rooms</CardDescription>
-                                        <CardTitle className="text-4xl"> 4 </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-xs text-muted-foreground">
-                                            🛁 Hot Shower
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <TabsList className="bg-transparent">
-                                            <TabsTrigger value="family">
-                                                <Button>View Room</Button>
-                                            </TabsTrigger>
-                                        </TabsList>
-                                    </CardFooter>
-
-                                </Card>
-
-
-
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                {hasAvailableRooms ? (
+                                    // Render room cards for each available room type
+                                    <div className="grid gap-4 sm:grid-cols-1">
+                                        {Object.entries(roomsData).map(([roomType, room]) => (
+                                            room?.roomId !== 0 && (
+                                                <Card key={roomType} x-chunk="dashboard-05-chunk-1">
+                                                    <CardHeader className="pb-2">
+                                                        <CardDescription>{roomType} Beds</CardDescription>
+                                                        <CardTitle className="text-4xl">{room?.numberOfRooms}</CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent>
+                                                        <div className="text-xs text-muted-foreground">
+                                                            🛁 Hot Shower
+                                                        </div>
+                                                    </CardContent>
+                                                    <CardFooter>
+                                                        <TabsList className="bg-transparent">
+                                                            <TabsTrigger value={roomType}>
+                                                                <Button>View Room</Button>
+                                                            </TabsTrigger>
+                                                        </TabsList>
+                                                    </CardFooter>
+                                                </Card>
+                                            )
+                                        ))}
+                                    </div>
+                                ) : (
+                                    // Show "No Rooms" message if no rooms are available
+                                    <div className="flex items-center justify-center h-full">
+                                        <h2 className="text-2xl font-semibold text-center">No Rooms</h2>
+                                    </div>
+                                )}
 
                             </div>
-
-
-
 
                         </div>
                     </div>

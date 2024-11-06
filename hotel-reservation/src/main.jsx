@@ -68,6 +68,8 @@ const router = createBrowserRouter(
 
         {/* Hotel Detail Page */}
         <Route path="hotels/:hotelId" element={<HotelDetails />} />
+        <Route path="hotels/:hotelId" element={<HotelDetails />} />
+        <Route path="hotels/:hotelId/:roomId/" element={<RoomDetails />} />
 
         {/* Booking Confirmation Page */}
         <Route path="booking/confirmation/:bookingId" element={<BookingConfirmation />} />
