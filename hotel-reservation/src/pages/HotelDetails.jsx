@@ -28,8 +28,8 @@ function HotelDetails() {
 
 
     const hotel = {
-        hotelName: "The Grand Resort",
-        image: "https://img.freepik.com/premium-photo/abstract-blur-hotel-lobby-interior-background_622214-22299.jpg",
+        hotelName: hotelDetails?.hotelName,
+        image: hotelDetails?.hotelProfile?.entrancePhoto
     };
 
     const coreValues = [
